@@ -1,0 +1,132 @@
+{
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "owners"
+        },
+        {
+          "type": "GET",
+          "path": "config.fieldLabel.config.tpl"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "Согласующий"
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "modelConfig.data.ownerIRs",
+          "ignoreUndefined": true
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": []
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "advanced_filter_inner"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "type": "OBJECT_SELECTOR",
+            "config": {
+              "fieldLabel": {
+                "type": "TEMPLATE",
+                "config": {
+                  "tpl": "Подразделение-владелец ИР"
+                }
+              },
+              "value": "local:modelConfig.ownerIRs",
+              "componentAttrs": {
+                "clearable": true,
+                "hideBottomSpace": true
+              },
+              "widget": {
+                "type": "CHIP",
+                "config": {
+                  "fieldLabel": "record:name",
+                  "componentAttrs": {
+                    "clearable": true
+                  },
+                  "role": "primary"
+                }
+              }
+            },
+            "actions": [
+              {
+                "name": "addItem",
+                "type": "MODAL",
+                "id": "selectOrgStruct",
+                "config": {
+                  "url": "config/modal/selectOrgStruct",
+                  "initialConfig": {
+                    "title": {
+                      "type": "TEMPLATE",
+                      "config": {
+                        "tpl": "Выберите подразделение"
+                      }
+                    },
+                    "needPositions": false
+                  },
+                  "modelConfig": {
+                    "selectedItems.items": "raw:modelConfig.ownerIRs"
+                  }
+                }
+              },
+              {
+                "type": "MODIFY",
+                "name": "modalSave",
+                "config": {
+                  "commitData": false,
+                  "source": "raw:modelConfig",
+                  "mods": [
+                    {
+                      "findTarget": [
+                        {
+                          "type": "GET",
+                          "path": "ownerIRs"
+                        }
+                      ],
+                      "modify": [
+                        {
+                          "type": "SET",
+                          "value": "payload:modalSave.selectedItems.items"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

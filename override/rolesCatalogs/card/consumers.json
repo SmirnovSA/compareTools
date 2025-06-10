@@ -1,0 +1,559 @@
+{
+  "type": "LAYOUT_FLEX_COLUMN",
+  "model": [
+    {
+      "key": "consumers",
+      "type": "REMOTE",
+      "accumulate": {
+        "enable": true,
+        "modelKey": "consumers",
+        "accumulateKeys": ["items"],
+        "initialStateFields": {
+          "requestParams.start": 0
+        },
+        "watchParams": ["local:requestParams.sort", "local:requestParams.search"]
+      },
+      "config": {
+        "api": {
+          "url": "rolecatalog/{{route:id}}/consumers",
+          "method": "POST",
+          "payload": {
+            "start": "local:requestParams.start",
+            "limit": "local:requestParams.limit",
+            "sort": "local:requestParams.sort",
+            "filter": [
+              {
+                "property": "search",
+                "operator": "custom",
+                "value": ["local:requestParams.search"]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "key": "requestParams",
+      "type": "LOCAL",
+      "config": {
+        "includeInChanges": false,
+        "data": {
+          "search": "",
+          "limit": 15,
+          "start": 0,
+          "accumulatedLength": 0,
+          "sort": [
+            {
+              "direction": "ASC",
+              "property": "name"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "key": "selectedItems",
+      "type": "LOCAL",
+      "config": {
+        "data": {
+          "mode": "MULTIPLE",
+          "items": []
+        }
+      }
+    }
+  ],
+  "navigation": [],
+  "items": [
+    {
+      "type": "LAYOUT_TOOLBAR",
+      "ref": "search_group",
+      "config": {
+        "class": "align-center q-px-none q-mb-sm gap-sm"
+      },
+      "items": [
+        {
+          "ref": "search",
+          "type": "SEARCH",
+          "config": {
+            "class": "col",
+            "componentAttrs": {
+              "placeholder": "Организация, подразделение",
+              "debounce": 600,
+              "advancedFilter": false,
+              "searchText": "Найти",
+              "searchBtnClass": "btn-primary q-btn--unelevated"
+            },
+            "value": "local:requestParams.search"
+          },
+          "actions": [
+            {
+              "type": "COMMIT",
+              "name": "search",
+              "config": {
+                "model": [
+                  {
+                    "key": "requestParams"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "type": "BUTTON",
+          "config": {
+            "fieldLabel": "Добавить потребителей",
+            "icon": {
+              "type": "SVG_PATH",
+              "config": {
+                "value": "M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+              }
+            }
+          },
+          "behavior": [
+            {
+              "type": "HIDDEN",
+              "config": {
+                "condition": {
+                  "property": "local:consumers.metaData.accesses.canAddConsumer",
+                  "operator": "eq",
+                  "inverse": true,
+                  "value": true
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "name": "click",
+              "type": "MODAL",
+              "config": {
+                "url": "config/modal/selectOrgStruct",
+                "initialConfig": {
+                  "title": "Выберите подразделение из списка",
+                  "needPositions": false,
+                  "singleSelection": false
+                }
+              }
+            },
+            {
+              "type": "API",
+              "name": "modalSave",
+              "id": "consumerLink",
+              "config": {
+                "url": "rolecatalog/{{route:id}}/consumer/link",
+                "method": "POST",
+                "payload": "{{{payload:modalSave.selectedItems.items|take:id}}}"
+              }
+            },
+            {
+              "name": "requestSuccess:consumerLink",
+              "type": "NOTIFY",
+              "config": {
+                "message": "Подразделение {{{payload:modalSave.selectedItems.items.0.name}}} успешно добавлено в информационный ресурс."
+              }
+            },
+            {
+              "name": "requestSuccess:consumerLink",
+              "type": "RELOAD",
+              "config": {
+                "model": [
+                  {
+                    "key": "consumers",
+                    "considerAccumulation": true
+                  }
+                ]
+              }
+            },
+            {
+              "name": "requestSuccess:consumerLink",
+              "type": "MODIFY",
+              "config": {
+                "commitData": false,
+                "source": "local:selectedItems",
+                "mods": [
+                  {
+                    "findTarget": [
+                      {
+                        "type": "GET",
+                        "path": "items"
+                      }
+                    ],
+                    "modify": [
+                      {
+                        "type": "SET",
+                        "value": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "requestFail:consumerLink.422",
+              "type": "NOTIFY",
+              "config": {
+                "tone": "negative",
+                "message": "{{payload:userMessage}}"
+              }
+            }
+          ]
+        },
+        {
+          "type": "BUTTON",
+          "config": {
+            "fieldLabel": "Исключить из списка",
+            "mode": "outline"
+          },
+          "behavior": [
+            {
+              "type": "HIDDEN",
+              "config": {
+                "condition": {
+                  "property": "local:consumers.metaData.accesses.canRemoveConsumer",
+                  "operator": "eq",
+                  "inverse": true,
+                  "value": true
+                }
+              }
+            },
+            {
+              "type": "DISABLED",
+              "config": {
+                "condition": {
+                  "and": [
+                    {
+                      "property": "local:selectedItems.mode",
+                      "operator": "eq",
+                      "inverse": true,
+                      "value": ["ALL"]
+                    },
+                    {
+                      "or": [
+                        {
+                          "property": "local:selectedItems.items.length",
+                          "operator": "eq",
+                          "value": [0]
+                        },
+                        {
+                          "property": "local:selectedItems.mode",
+                          "operator": "in",
+                          "inverse": true,
+                          "value": [
+                            "MULTIPLE",
+                            "ALL_EXCEPT"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "actions": [
+            {
+              "name": "click",
+              "type": "ALERT_MODAL",
+              "config": {
+                "title": "Внимание",
+                "message": "Подразделение {{{local:selectedItems.items.0.name}}} будет исключено из списка потребителей.\nВы уверены, что хотите продолжить?",
+                "persistent": true,
+                "class": "text-wrap",
+                "cancel": {
+                  "labeld": "Нет",
+                  "colord": "white",
+                  "textColord": "black"
+                }
+              }
+            },
+            {
+              "type": "API",
+              "name": "alertConfirm",
+              "id": "consumerUnlink",
+              "config": {
+                "url": "rolecatalog/{{route:id}}/consumer/unlink",
+                "method": "POST",
+                "payload": {
+                  "type": "CONDITION_VALUE",
+                  "config": {
+                    "condition": {
+                      "property": "{{local:selectedItems.mode|eq:ALL}}"
+                    },
+                    "value": "{{{local:consumers.accumulatedData.items|take:id}}}",
+                    "defaultValue": "{{{local:selectedItems.items|take:id}}}"
+                  }
+                }
+              }
+            },
+            {
+              "name": "requestSuccess:consumerUnlink",
+              "type": "NOTIFY",
+              "config": {
+                "message": "Подразделение {{{local:selectedItems.items.0.name}}} успешно исключено из списка потребителей."
+              }
+            },
+            {
+              "name": "requestSuccess:consumerUnlink",
+              "type": "RELOAD",
+              "config": {
+                "model": [
+                  {
+                    "key": "consumers",
+                    "considerAccumulation": true
+                  }
+                ]
+              }
+            },
+            {
+              "name": "requestSuccess:consumerUnlink",
+              "type": "MODIFY",
+              "config": {
+                "commitData": false,
+                "source": "local:selectedItems",
+                "mods": [
+                  {
+                    "findTarget": [
+                      {
+                        "type": "GET",
+                        "path": "items"
+                      }
+                    ],
+                    "modify": [
+                      {
+                        "type": "SET",
+                        "value": []
+                      }
+                    ]
+                  },
+                  {
+                    "findTarget": [
+                      {
+                        "type": "GET",
+                        "path": "mode"
+                      }
+                    ],
+                    "modify": [
+                      {
+                        "type": "SET",
+                        "value": "MULTIPLE"
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "requestFail:consumerUnlink.422",
+              "type": "NOTIFY",
+              "config": {
+                "tone": "negative",
+                "message": "{{payload:userMessage}}"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "LAYOUT_ROW",
+      "ref": "container",
+      "config": {
+        "componentAttrs": {
+          "componentClass": "flex row col-grow expand"
+        }
+      },
+      "items": [
+        {
+          "type": "EMPTY_LIST",
+          "config": {
+            "fieldLabel": "Не найдено ни одного элемента"
+          },
+          "behavior": [
+            {
+              "type": "HIDDEN",
+              "config": {
+                "condition": {
+                  "and": [
+                    {
+                      "property": "local:consumers.accumulatedData.items",
+                      "operator": "empty",
+                      "inverse": true
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ref": "role_catalogs",
+          "type": "LIST",
+          "config": {
+            "slot": "before",
+            "modelAccumulation": true,
+            "selectionModel": {
+              "value": "local:selectedItems",
+              "property": "id",
+              "singleSelection": false,
+              "bulkSelection": true,
+              "useSelection": "local:consumers.metaData.accesses.canRemoveConsumer"
+            },
+            "widget": {
+              "ref": "role_catalogs_row",
+              "type": "LIST_ROW",
+              "config": {},
+              "items": [
+                {
+                  "type": "REUSABLE_CONTROL",
+                  "ref": "warn",
+                  "config": {
+                    "toSlot": "warning",
+                    "url": "config/reusable/rowWarning",
+                    "overrideRecord": {
+                      "warning": "record:warning",
+                      "warningType": "record:warningType",
+                      "corruption": "record:corruption",
+                      "context": "roleCorruption",
+                      "pageName": "Управление информационными ресурсами"
+                    }
+                  }
+                },
+                {
+                  "ref": "icon_cell",
+                  "type": "CELL_ICON",
+                  "config": {
+                    "fieldLabel": "",
+                    "class": "column text-center",
+                    "icon": {
+                      "type": "SVG_PATH",
+                      "config": {
+                        "size": "34px",
+                        "value": "M20,18H4V8H20M20,6H12L10,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8C22,6.89 21.1,6 20,6Z"
+                      }
+                    }
+                  }
+                },
+                {
+                  "ref": "name_cell",
+                  "type": "CELL_EMPTY",
+                  "config": {
+                    "componentAttrs": {
+                      "grow": 1
+                    }
+                  },
+                  "items": [
+                    {
+                      "type": "TEXT",
+                      "config": {
+                        "class": "width-fit-content"
+                      },
+                      "items": [
+                        {
+                          "type": "ROUTER_LINK",
+                          "config": {
+                            "class": "q-mr-sm",
+                            "fieldLabel": "{{{record:name}}}",
+                            "to": "/orgstruct/card/{{record:id}}"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "CELL_LINK",
+                  "ref": "manager_cell",
+                  "config": {
+                    "class": "word-break-all",
+                    "to": "{{#record:manager}}/users/{{record:manager.id}}{{/record:manager}}",
+                    "fieldLabel": "{{#record:manager}}{{{record:manager.familyName}}} {{{record:manager.givenName}}} {{{record:manager.additionalName}}}{{/record:manager}}{{^record:manager}}-{{/record:manager}}",
+                    "componentAttrs": {
+                      "grow": 1
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "modelBindings": {
+            "data": "local:consumers",
+            "accumulatedData": "local:consumers.accumulatedData.items",
+            "offset": "local:requestParams.start",
+            "limit": "local:requestParams.limit",
+            "search": "local:requestParams.search",
+            "sort": "local:requestParams.sort",
+            "accumulatedLength": "local:requestParams.accumulatedLength",
+            "watchParams": ["local:requestParams.sort", "local:requestParams.search"]
+          },
+          "items": [
+            {
+              "type": "LIST_TH",
+              "ref": "row_icon",
+              "config": {
+                "fieldLabel": "",
+                "componentAttrs": {
+                  "grow": false,
+                  "minWidth": 90,
+                  "headerClass": "col-1"
+                }
+              }
+            },
+            {
+              "type": "LIST_TH",
+              "ref": "name",
+              "config": {
+                "fieldLabel": "Организация, подразделение",
+                "sortable": true,
+                "sortProperty": "name",
+                "componentAttrs": {
+                  "grow": 1,
+                  "headerClass": "col"
+                }
+              }
+            },
+            {
+              "type": "LIST_TH",
+              "ref": "manager",
+              "config": {
+                "fieldLabel": "Руководитель",
+                "componentAttrs": {
+                  "grow": 1,
+                  "headerClass": "col"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "LAYOUT_ROW",
+      "config": {
+        "componentAttrs": {
+          "class": "gap-sm"
+        }
+      },
+      "items": [
+        {
+          "type": "BUTTON",
+          "config": {
+            "class": "btn-primary",
+            "fieldLabel": "К списку",
+            "componentAttrs": {
+              "to": "/rolesCatalogs",
+              "unelevated": true,
+              "flat": false,
+              "outline": true,
+              "size": "md"
+            }
+          }
+        },
+        {
+          "type": "TOOLBAR_SPACER",
+          "config": {}
+        }
+      ]
+    }
+  ]
+}

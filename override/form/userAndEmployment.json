@@ -1,0 +1,766 @@
+{
+  "__revisionModded": "f5bb35ab",
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "formFields.createOrEditUser"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": [
+            {
+              "ref": "lastName-edit",
+              "type": "INPUT",
+              "config": {
+                "componentAttrs": {
+                  "clearable": true
+                },
+                "value": "record:lastName",
+                "fieldLabel": "Фамилия",
+                "hideBottomSpace": true,
+                "rules": [
+                  {
+                    "type": "PRESENCE",
+                    "message": "Обязательное поле"
+                  }
+                ]
+              }
+            },
+            {
+              "ref": "firstName-edit",
+              "type": "INPUT",
+              "config": {
+                "componentAttrs": {
+                  "clearable": true
+                },
+                "value": "record:firstName",
+                "fieldLabel": "Имя",
+                "hideBottomSpace": true,
+                "rules": [
+                  {
+                    "type": "PRESENCE",
+                    "message": "Обязательное поле"
+                  }
+                ]
+              }
+            },
+            {
+              "ref": "additionalName-edit",
+              "type": "INPUT",
+              "config": {
+                "componentAttrs": {
+                  "clearable": true
+                },
+                "value": "record:additionalName",
+                "fieldLabel": "Отчество",
+                "hideBottomSpace": true
+              }
+            },
+            {
+              "ref": "emailAddress-edit",
+              "type": "INPUT",
+              "config": {
+                "formTypes": ["editUser"],
+                "readonly": true,
+                "value": "record:emailAddress",
+                "hideBottomSpace": true,
+                "fieldLabel": "Эл. почта"
+              }
+            },
+            {
+              "ref": "activeFromTo-edit",
+              "type": "DATE_EDITOR",
+              "config": {
+                "formTypes": ["editUser"],
+                "value": "local:activeFromToEditor",
+                "fieldLabel": "Не блокировать на время отпуска в период",
+                "shape": "rounded",
+                "setRange": true,
+                "useTime": true,
+                "sendTime": true,
+                "hideBottomSpace": true
+              },
+              "actions": [
+                {
+                  "name": "change",
+                  "type": "MODIFY",
+                  "config": {
+                    "source": "raw:formData.data",
+                    "mods": [
+                      {
+                        "findTarget": [
+                          {
+                            "type": "GET",
+                            "path": "activeFrom"
+                          }
+                        ],
+                        "modify": [
+                          {
+                            "type": "SET",
+                            "value": "eventPayload:value.from"
+                          }
+                        ]
+                      },
+                      {
+                        "findTarget": [
+                          {
+                            "type": "GET",
+                            "path": "activeTo"
+                          }
+                        ],
+                        "modify": [
+                          {
+                            "type": "SET",
+                            "value": "eventPayload:value.to"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "ref": "isManual",
+              "format": [
+                {
+                  "type": "BOOLEAN",
+                  "key": "boolean",
+                  "config": {
+                    "positive": "Да",
+                    "negative": "Нет"
+                  }
+                }
+              ],
+              "type": "DISPLAY_FIELD",
+              "config": {
+                "formTypes": ["readUserCardInfo", "readUserUpdateRequest"],
+                "fieldLabel": {
+                  "type": "TEMPLATE",
+                  "config": {
+                    "tpl": "Пользователь создан вручную"
+                  }
+                },
+                "text": "{{record:isManual|boolean}}",
+                "componentAttrs": {
+                  "class": "col-md-5 col-xs-12"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "formFields.createOrEditEmployment"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 3,
+          "deleteCount": 1,
+          "value": {
+            "ref": "employmentType",
+            "type": "SELECT",
+            "config": {
+              "value": "record:type",
+              "translate": {
+                "enable": true
+              },
+              "hideBottomSpace": true,
+              "rules": [
+                {
+                  "type": "PRESENCE",
+                  "message": "Обязательное поле"
+                }
+              ],
+              "componentAttrs": {
+                "style": "width:100%;",
+                "clearable": true,
+                "option-value": "id",
+                "option-label": "name"
+              },
+              "options": [
+                { "id": "externalEmployee", "name": "Подрядчик" },
+                { "id": "internalEmployee", "name": "ТД: основное место работы" }
+              ],
+              "fieldLabel": "Тип пользователя"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "hireDate-edit"
+        },
+        {
+          "type": "GET",
+          "path": "config.rules"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": [
+            {
+              "type": "PRESENCE",
+              "condition": {
+                "property": "record:type",
+                "operator": "eq",
+                "inverse": true,
+                "value": ["externalEmployee"]
+              },
+              "message": {
+                "type": "TEMPLATE",
+                "config": {
+                  "tpl": "Обязательное поле"
+                }
+              }
+            },
+            {
+              "type": "CUSTOM",
+              "payload": {
+                "type": "CONDITION",
+                "config": {
+                  "condition": {
+                    "or": [
+                      {
+                        "property": "raw:formDataEmployment.data.fireDate",
+                        "operator": "in",
+                        "value": ["", null]
+                      },
+                      {
+                        "property": "{{raw:formDataEmployment.data.fireDate|date_format:t}}",
+                        "operator": "gt",
+                        "value": ["{{raw:formDataEmployment.data.hireDate|date_format:t}}"]
+                      }
+                    ]
+                  }
+                }
+              },
+              "message": {
+                "type": "TEMPLATE",
+                "config": {
+                  "tpl": "Дата начала работы не может быть позже Даты увольнения"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "fireDate-edit"
+        },
+        {
+          "type": "GET",
+          "path": "config.rules"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": [
+            {
+              "type": "PRESENCE",
+              "condition": {
+                "property": "record:type",
+                "operator": "eq",
+                "value": ["externalEmployee"]
+              },
+              "message": {
+                "type": "TEMPLATE",
+                "config": {
+                  "tpl": "Обязательное поле"
+                }
+              }
+            },
+            {
+              "type": "CUSTOM",
+              "payload": {
+                "type": "CONDITION",
+                "config": {
+                  "condition": {
+                    "or": [
+                      {
+                        "property": "raw:formDataEmployment.data.hireDate",
+                        "operator": "in",
+                        "value": ["", null]
+                      },
+                      {
+                        "property": "raw:formDataEmployment.data.fireDate",
+                        "operator": "in",
+                        "value": ["", null]
+                      },
+                      {
+                        "property": "{{raw:formDataEmployment.data.hireDate|date_format:t}}",
+                        "operator": "lt",
+                        "value": ["{{raw:formDataEmployment.data.fireDate|date_format:t}}"]
+                      }
+                    ]
+                  }
+                }
+              },
+              "message": {
+                "type": "TEMPLATE",
+                "config": {
+                  "tpl": "Дата увольнения не может быть раньше Даты начала работы."
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "formFields.readUser"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": [
+            {
+              "ref": "lastName",
+              "type": "DISPLAY_FIELD",
+              "config": {
+                "fieldLabel": {
+                  "type": "TEMPLATE",
+                  "config": {
+                    "tpl": "Фамилия"
+                  }
+                },
+                "text": "record:lastName",
+                "editMode": "false",
+                "componentAttrs": {
+                  "style": "overflow-wrap: anywhere;"
+                }
+              }
+            },
+            {
+              "ref": "firstName",
+              "type": "DISPLAY_FIELD",
+              "config": {
+                "fieldLabel": {
+                  "type": "TEMPLATE",
+                  "config": {
+                    "tpl": "Имя"
+                  }
+                },
+                "text": "record:firstName",
+                "editMode": "false",
+                "componentAttrs": {
+                  "style": "overflow-wrap: anywhere;"
+                }
+              }
+            },
+            {
+              "ref": "additionalName",
+              "type": "DISPLAY_FIELD",
+              "config": {
+                "fieldLabel": {
+                  "type": "TEMPLATE",
+                  "config": {
+                    "tpl": "Отчество"
+                  }
+                },
+                "text": "record:additionalName",
+                "editMode": "false",
+                "componentAttrs": {
+                  "style": "overflow-wrap: anywhere;"
+                }
+              }
+            },
+            {
+              "ref": "name",
+              "format": [
+                {
+                  "type": "EMPTY",
+                  "key": "empty",
+                  "config": {
+                    "value": "-"
+                  }
+                }
+              ],
+              "type": "DISPLAY_FIELD",
+              "config": {
+                "formTypes": ["readUserCardInfo", "readUserUpdateRequest"],
+                "fieldLabel": {
+                  "type": "TEMPLATE",
+                  "config": {
+                    "tpl": "Логин в  %{0}",
+                    "args": {
+                      "0": "{{{global:app.systemSettings.shortName}}}"
+                    }
+                  }
+                },
+                "text": "{{record:name|empty}}",
+                "editMode": true,
+                "componentAttrs": {
+                  "class": "col-md-5 col-xs-12"
+                }
+              }
+            },
+            {
+              "ref": "telephon",
+              "format": [
+                {
+                  "type": "EMPTY",
+                  "key": "empty",
+                  "config": {
+                    "value": "-"
+                  }
+                }
+              ],
+              "type": "DISPLAY_FIELD",
+              "config": {
+                "formTypes": ["readUserCardInfo", "readUserUpdateRequest"],
+                "fieldLabel": {
+                  "type": "TEMPLATE",
+                  "config": {
+                    "tpl": "Телефон"
+                  }
+                },
+                "text": "{{record:telephon|empty}}",
+                "componentAttrs": {
+                  "class": "col-md-5 col-xs-12"
+                }
+              }
+            },
+            {
+              "ref": "emailAddress",
+              "format": [
+                {
+                  "type": "EMPTY",
+                  "key": "empty",
+                  "config": {
+                    "value": "-"
+                  }
+                }
+              ],
+              "type": "DISPLAY_FIELD",
+              "config": {
+                "formTypes": ["readUserCardInfo", "readUserUpdateRequest"],
+                "fieldLabel": {
+                  "type": "TEMPLATE",
+                  "config": {
+                    "tpl": "Эл. почта"
+                  }
+                },
+                "text": "{{record:emailAddress|empty}}",
+                "editMode": true,
+                "componentAttrs": {
+                  "class": "col-md-5 col-xs-12"
+                }
+              }
+            },
+            {
+              "ref": "city",
+              "format": [
+                {
+                  "type": "EMPTY",
+                  "key": "empty",
+                  "config": {
+                    "value": "-"
+                  }
+                }
+              ],
+              "type": "DISPLAY_FIELD",
+              "config": {
+                "formTypes": ["readUserCardInfo", "readUserUpdateRequest"],
+                "fieldLabel": {
+                  "type": "TEMPLATE",
+                  "config": {
+                    "tpl": "Город"
+                  }
+                },
+                "text": "{{record:city|empty}}",
+                "componentAttrs": {
+                  "class": "col-md-5 col-xs-12"
+                }
+              }
+            },
+            {
+              "ref": "street",
+              "format": [
+                {
+                  "type": "EMPTY",
+                  "key": "empty",
+                  "config": {
+                    "value": "-"
+                  }
+                }
+              ],
+              "type": "DISPLAY_FIELD",
+              "config": {
+                "formTypes": ["readUserCardInfo", "readUserUpdateRequest"],
+                "fieldLabel": {
+                  "type": "TEMPLATE",
+                  "config": {
+                    "tpl": "Улица"
+                  }
+                },
+                "text": "{{record:street|empty}}",
+                "componentAttrs": {
+                  "class": "col-md-5 col-xs-12"
+                }
+              }
+            },
+            {
+              "ref": "country",
+              "format": [
+                {
+                  "type": "EMPTY",
+                  "key": "empty",
+                  "config": {
+                    "value": "-"
+                  }
+                }
+              ],
+              "type": "DISPLAY_FIELD",
+              "config": {
+                "formTypes": ["readUserCardInfo", "readUserUpdateRequest"],
+                "fieldLabel": {
+                  "type": "TEMPLATE",
+                  "config": {
+                    "tpl": "Страна"
+                  }
+                },
+                "text": "{{record:country|empty}}",
+                "componentAttrs": {
+                  "class": "col-md-5 col-xs-12"
+                }
+              }
+            },
+            {
+              "ref": "activeFrom",
+              "format": [
+                {
+                  "type": "EMPTY",
+                  "key": "empty",
+                  "config": {
+                    "value": "-"
+                  }
+                },
+                {
+                  "type": "DATE",
+                  "key": "date",
+                  "config": {
+                    "date": "long",
+                    "time": true
+                  }
+                }
+              ],
+              "type": "DISPLAY_FIELD",
+              "config": {
+                "formTypes": ["readUserCardInfo", "readUserUpdateRequest"],
+                "fieldLabel": {
+                  "type": "TEMPLATE",
+                  "config": {
+                    "tpl": "Не блокировать на время отпуска в период"
+                  }
+                },
+                "text": "с {{record:activeFrom|date_format:human:time}} по {{record:activeTo|date_format:human:time}}",
+                "componentAttrs": {
+                  "class": "col-md-5 col-xs-12"
+                }
+              },
+              "behavior": [
+                {
+                  "type": "BINARY",
+                  "config": {
+                    "condition": {
+                      "property": "record:activeFrom",
+                      "operator": "eq",
+                      "value": [null]
+                    },
+                    "config": {
+                      "text": "-"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "ref": "isManual",
+              "format": [
+                {
+                  "type": "BOOLEAN",
+                  "key": "boolean",
+                  "config": {
+                    "positive": "Да",
+                    "negative": "Нет"
+                  }
+                }
+              ],
+              "type": "DISPLAY_FIELD",
+              "config": {
+                "formTypes": ["readUserCardInfo", "readUserUpdateRequest"],
+                "fieldLabel": {
+                  "type": "TEMPLATE",
+                  "config": {
+                    "tpl": "Пользователь создан вручную"
+                  }
+                },
+                "text": "{{record:isManual|boolean}}",
+                "componentAttrs": {
+                  "class": "col-md-5 col-xs-12"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "contractNumber"
+        }
+      ],
+      "modify": [
+        {
+          "type": "DEL"
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "formFields.readEmployment"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 5,
+          "deleteCount": 0,
+          "value": {
+            "ref": "type",
+            "type": "DISPLAY_FIELD",
+            "behavior": [
+              {
+                "type": "SHOW",
+                "config": {
+                  "condition": {
+                    "property": "true",
+                    "operator": "eq",
+                    "value": ["true"]
+                  }
+                }
+              }
+            ],
+            "config": {
+              "fieldLabel": "Тип пользователя",
+              "text":  {
+                "type": "TEMPLATE",
+                "config": {
+                  "tpl": "record:type",
+                  "context": "select-options-type"
+                }
+              },
+              "editMode": false,
+              "componentAttrs": {
+                "style": "overflow-wrap: anywhere;"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "formFields.readEmployment"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "format": [
+              {
+                "type": "EMPTY",
+                "key": "empty",
+                "config": {
+                  "value": "-"
+                }
+              }
+            ],
+            "type": "DISPLAY_FIELD",
+            "config": {
+              "fieldLabel": {
+                "type": "TEMPLATE",
+                "config": {
+                  "tpl": "Эл. почта"
+                }
+              },
+              "text": "{{record:emailAddress|empty}}",
+              "editMode": true,
+              "componentAttrs": {
+                "class": "col-md-5 col-xs-12"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "formFields.createOrEditEmployment"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 11,
+          "deleteCount": 0,
+          "value": {
+            "type": "INPUT",
+            "config": {
+              "formTypes": ["editEmployment"],
+              "value": "record:emailAddress",
+              "hideBottomSpace": true,
+              "fieldLabel": "Эл. почта"
+            },
+            "behavior": [
+              {
+                "type": "DISABLED",
+                "config": {
+                  "condition": {
+                    "property": "record:type",
+                    "operator": "eq",
+                    "inverse": true,
+                    "value": ["externalEmployee"]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

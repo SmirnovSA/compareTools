@@ -1,0 +1,192 @@
+{
+  "type": "MODAL",
+  "model": [
+    {
+      "key": "modelConfig",
+      "type": "LOCAL",
+      "config": {
+        "includeInChanges": false,
+        "data": {
+          "orgs": []
+        }
+      }
+    }
+  ],
+  "navigation": [],
+  "config": {
+    "position": "right",
+    "height": "100%",
+    "width": "500px",
+    "maxWidth": "80vw"
+  },
+  "items": [
+    {
+      "type": "MODAL_HEADER",
+      "config": {
+        "fieldLabel": "Расширенный фильтр"
+      }
+    },
+    {
+      "type": "MODAL_INNER",
+      "ref": "advanced_filter_inner",
+      "componentAttrs": {
+        "class": "test"
+      },
+      "items": [
+        {
+          "ref": "orgs",
+          "type": "OBJECT_SELECTOR",
+          "config": {
+            "fieldLabel": "Организации, подразделения",
+            "value": "local:modelConfig.orgs",
+            "widget": {
+              "type": "CHIP",
+              "ref": "orgs-selected",
+              "config": {
+                "fieldLabel": "{{{record:name|hierarchy}}}",
+                "tooltip": "{{{record:name|separate}}}",
+                "componentAttrs": {
+                  "avatar": "",
+                  "color": "",
+                  "textColor": "",
+                  "removable": true,
+                  "outline": true
+                }
+              }
+            },
+            "componentAttrs": {
+              "style": "width: 100%"
+            }
+          },
+          "actions": [
+            {
+              "name": "addItem",
+              "type": "MODAL",
+              "id": "selectOrgStructModal",
+              "config": {
+                "initialConfig": {
+                  "divisionsSelectable111": false,
+                  "needPositions": false,
+                  "title": "Выберите подразделения из списка"
+                },
+                "modelConfig": {
+                  "selectedItems.items": "raw:modelConfig.orgs"
+                },
+                "url": "config/modal/selectOrgStruct"
+              }
+            },
+            {
+              "type": "MODIFY",
+              "name": "modalSave:selectOrgStructModal",
+              "config": {
+                "commitData": false,
+                "source": "raw:modelConfig",
+                "mods": [
+                  {
+                    "findTarget": [
+                      {
+                        "type": "GET",
+                        "path": "orgs"
+                      }
+                    ],
+                    "modify": [
+                      {
+                        "type": "SET",
+                        "value": "payload:selectedItems.items"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "MODAL_ACTIONS",
+      "ref": "actions",
+      "items": [
+        {
+          "ref": "submit",
+          "type": "BUTTON",
+          "actions": [
+            {
+              "name": "click",
+              "type": "MODAL_SAVE",
+              "config": {
+                "payload": "raw:modelConfig"
+              }
+            }
+          ],
+          "config": {
+            "class": "btn-primary",
+            "componentAttrs": {
+              "unelevated": true,
+              "flat": false,
+              "outline": false,
+              "size": "md"
+            },
+            "fieldLabel": "Найти"
+          }
+        },
+        {
+          "ref": "reset",
+          "type": "BUTTON",
+          "actions": [
+            {
+              "name": "click",
+              "type": "RESET",
+              "config": {}
+            }
+          ],
+          "config": {
+            "componentAttrs": {
+              "unelevated": true,
+              "flat": true,
+              "outline": false,
+              "size": "md"
+            },
+            "fieldLabel": "Закрыть"
+          }
+        },
+        {
+          "ref": "separator",
+          "type": "TOOLBAR_SEPARATOR",
+          "config": {}
+        },
+        {
+          "ref": "reset",
+          "type": "BUTTON",
+          "actions": [
+            {
+              "name": "click",
+              "type": "REJECT",
+              "config": {
+                "model": [
+                  {
+                    "key": "modelConfig"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "click",
+              "type": "MODAL_SAVE",
+              "config": {}
+            }
+          ],
+          "config": {
+            "componentAttrs": {
+              "unelevated": true,
+              "flat": true,
+              "outline": false,
+              "size": "md"
+            },
+            "fieldLabel": "Очистить"
+          }
+        }
+      ]
+    }
+  ]
+}

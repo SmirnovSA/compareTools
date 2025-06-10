@@ -1,0 +1,98 @@
+{
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "request_item_header_left"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "type": "LAYOUT_ROW",
+            "config": {
+              "class": "gap-md"
+            },
+            "items": [
+              {
+                "type": "CHIP",
+                "config": {
+                  "componentAttrs": {
+                    "style": {
+                      "color": "var(--q-primary-accent)"
+                    }
+                  },
+                  "items": [
+                    {
+                      "type": "ICON",
+                      "config": {
+                        "componentAttrs": {
+                          "size": "md",
+                          "class": "q-mr-sm",
+                          "style": {
+                            "color": "var(--q-icon-warning-color)"
+                          }
+                        },
+                        "icon": {
+                          "type": "LIBRARY",
+                          "config": {
+                            "value": "warning"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "TEXT",
+                      "config": {
+                        "fieldLabel": "Внимание! В запросе есть комментарии."
+                      }
+                    }
+                  ]
+                },
+                "actions": [
+                  {
+                    "type": "MODAL",
+                    "name": "click",
+                    "id": "historyModal",
+                    "config": {
+                      "url": "config/modal/requestHistory",
+                      "initialConfig": {
+                        "title": {
+                          "type": "TEMPLATE",
+                          "config": {
+                            "tpl": "История согласований"
+                          }
+                        }
+                      },
+                      "modelConfig": {
+                        "history": "record:history"
+                      }
+                    }
+                  }
+                ]
+              }
+            ],
+            "behavior": [
+              {
+                "type": "HIDDEN",
+                "config": {
+                  "condition": {
+                    "property": [null, ""],
+                    "operator": "arrEvery",
+                    "value": "{{record:history|take:comment}}"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

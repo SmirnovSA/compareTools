@@ -1,0 +1,133 @@
+{
+  "__revisionModded": "f5bb35ab",
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "requests"
+        },
+        {
+          "type": "GET",
+          "path": "config.api.url"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "v3/requests"
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "requests_virtual_list"
+        },
+        {
+          "type": "GET",
+          "path": "config.widget.items.5"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": {
+            "type": "CELL_EMPTY",
+            "config": {
+              "componentAttrs": {
+                "grow": true,
+                "minWidth": 200
+              }
+            },
+            "items": [
+              {
+                "type": "REUSABLE_CONTROL",
+                "ref": "request_status_badge",
+                "config": {
+                  "url": "config/requests/reusable/statusBadge"
+                },
+                "overrideRecord": {
+                  "status": "record:status"
+                }
+              },
+              {
+                "type": "ICON",
+                "config": {
+                  "icon": {
+                    "type": "SVG_PATH",
+                    "config": {
+                      "tooltip": "Найдены конфликты",
+                      "class": "text-negative q-ml-xs",
+                      "size": "xs",
+                      "value": "M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"
+                    }
+                  }
+                },
+                "behavior": [
+                  {
+                    "type": "HIDDEN",
+                    "config": {
+                      "condition": {
+                        "property": "record:hasConflicts",
+                        "operator": "eq",
+                        "inverse": true,
+                        "value": [true]
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "requests_virtual_list"
+        },
+        {
+          "type": "GET",
+          "path": "items.4.config.componentAttrs"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": {
+            "grow": true,
+            "minWidth": 200
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "search"
+        },
+        {
+          "type": "GET",
+          "path": "config.placeholder.config.tpl"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "Номер заявки"
+        }
+      ]
+    }
+  ]
+}

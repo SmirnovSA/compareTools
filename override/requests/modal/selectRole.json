@@ -1,0 +1,672 @@
+{
+  "__revisionModded": "f5bb35ab",
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "key": "searchValue",
+            "type": "LOCAL",
+            "config": {
+              "data": {
+                "search": ""
+              }
+            }
+          }
+        }
+      ]
+    },
+    
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "roles"
+        },
+        {
+          "type": "GET",
+          "path": "config"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET_MERGE",
+          "value": {
+            "readyToStart": false,
+            "behavior": [
+              {
+                "type": "BINARY",
+                "config": {
+                  "condition": {
+                    "property": "route:oid.0",
+                    "operator": "eq",
+                    "value": ["me"]
+                  },
+                  "config": {
+                    "api": {
+                      "payload": {
+                        "forMe": true
+                      }
+                    }
+                  },
+                  "defaultConfig": {
+                    "api": {
+                      "payload": {
+                        "forMe": false
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "type": "BINARY",
+                "config": {
+                  "condition": {
+                    "or": [
+                      {
+                        "property": "local:requestParams.search",
+                        "operator": "empty",
+                        "inverse": true
+                      },
+                      {
+                        "property": "local:requestParams.selectedCatalog.id",
+                        "operator": "empty",
+                        "inverse": true
+                      }
+                    ]
+                  },
+                  "config": {
+                    "readyToStart": true
+                  },
+                  "defaultConfig": {
+                    "readyToStart": false
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "roles"
+        },
+        {
+          "type": "GET",
+          "path": "config.api.url"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "v3/catalog/tree/roles"
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "roles"
+        },
+        {
+          "type": "GET",
+          "path": "config.api.payload"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET_MERGE",
+          "value": {
+            "empOids": "local:modelConfig.empOids",
+            "forMe": false
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "roles"
+        },
+        {
+          "type": "GET",
+          "path": "accumulate.watchParams"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": "local:modelConfig.empOids"
+        }
+      ]
+    },
+
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "search"
+        },
+        {
+          "type": "GET",
+          "path": "items.0"
+        }
+      ],
+      "modify": [
+        {
+          "type": "DEL"
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "search"
+        },
+        {
+          "type": "GET",
+          "path": "config.value"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "local:searchValue.search"
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "search"
+        },
+        {
+          "type": "GET",
+          "path": "actions.0.config.model.0.key"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "searchValue"
+        }
+      ]
+    },
+    
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "search_group"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 1,
+          "value": {
+            "ref": "search-button",
+            "type": "BUTTON",
+            "config": {
+              "fieldLabel": {
+                "type": "TEMPLATE",
+                "config": {
+                  "tpl": "Найти"
+                }
+              },
+              "componentAttrs": {
+                "style": "margin-right: 30px;"
+              }
+            },
+            "actions": [
+              {
+                "name": "click",
+                "type": "MODIFY",
+                "config": {
+                  "commitData": true,
+                  "source": "local:requestParams",
+                  "mods": [
+                    {
+                      "findTarget": [
+                        {
+                          "type": "GET",
+                          "path": "search"
+                        }
+                      ],
+                      "modify": [
+                        {
+                          "type": "SET",
+                          "value": "local:searchValue.search"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "values_CATALOG_ROLE"
+        },
+        {
+          "type": "GET",
+          "path": "actions"
+        },
+        {
+          "type": "FIND",
+          "property": "name",
+          "operator": "eq",
+          "value": "addItem"
+        },
+        {
+          "type": "GET",
+          "path": "config.modelConfig"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET_MERGE",
+          "value": {
+            "empOids": "local:modelConfig.empOids",
+            "requester": "route:oid.0",
+            "showIncludeNested": true,
+            "includeNested": "local:requestParams.includeNested"
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "values_CATALOG_ROLE"
+        },
+        {
+          "type": "GET",
+          "path": "actions"
+        },
+        {
+          "type": "FIND",
+          "property": "name",
+          "operator": "eq",
+          "value": "modalSave"
+        },
+        {
+          "type": "GET",
+          "path": "config.mods"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "findTarget": [
+              {
+                "type": "GET",
+                "path": "includeNested"
+              }
+            ],
+            "modify": [
+              {
+                "type": "SET",
+                "value": "payload:modalSave.includeNested"
+              }
+            ]
+          }
+        }
+      ]
+    },
+
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "gen-modal-1-modal_inner"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "type": "REUSABLE_CONTROL",
+            "ref": "users-empty",
+            "config": {
+              "url": "config/requests/reusable/emptyList"
+            },
+            "overrideRecord": {
+              "fieldLabel": {
+                "type": "TEMPLATE",
+                "config": {
+                  "tpl": "Укажите параметры фильтра и/или информационный ресурс"
+                }
+              }
+            },
+            "behavior": [
+              {
+                "type": "HIDDEN",
+                "config": {
+                  "condition": {
+                    "or": [
+                      {
+                        "property": "local:requestParams.search",
+                        "operator": "empty",
+                        "inverse": true
+                      },
+                      {
+                        "property": "local:requestParams.selectedCatalog.id",
+                        "operator": "empty",
+                        "inverse": true
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "gen-modal-1-modal_inner"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "type": "MODAL_INNER",
+            "behavior": [
+              {
+                "type": "HIDDEN",
+                "config": {
+                  "condition": {
+                    "property": "local:roles.$loading",
+                    "operator": "eq",
+                    "inverse": true,
+                    "value": [true]
+                  }
+                }
+              }
+            ],
+            "items": [
+              {
+                "type": "INNER_LOADING",
+                "ref": "inner-loading",
+                "config": {
+                  "componentAttrs": {
+                    "style": "background:transparent;"
+                  }
+                }
+                
+              }
+            ]
+          }
+        }
+      ]
+    },
+
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "notFound"
+        },
+        {
+          "type": "GET",
+          "path": "behavior.0.config.condition"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": {
+            "or": [
+              {
+                "property": "local:roles.items.length",
+                "operator": "eq",
+                "inverse": true,
+                "value": [0]
+              },
+              {
+                "and": [
+                  {
+                    "property": "local:requestParams.search",
+                    "operator": "empty"
+                  },
+                  {
+                    "property": "local:requestParams.selectedCatalog.id",
+                    "operator": "empty"
+                  }
+                ]
+              },
+              {
+                "property": "local:roles.$loading",
+                "operator": "eq",
+                "value": [true]
+              }
+            ]
+          }
+        }
+      ]
+    },
+
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "roles_list"
+        },
+        {
+          "type": "GET",
+          "path": "behavior.0.config.condition"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": {
+            "or": [
+              {
+                "property": "local:roles.$loading",
+                "operator": "eq",
+                "value": [true]
+              },
+              {
+                "and": [
+                  {
+                    "property": "local:requestParams.search",
+                    "operator": "empty"
+                  },
+                  {
+                    "property": "local:requestParams.selectedCatalog.id",
+                    "operator": "empty"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "requestParams"
+        },
+        {
+          "type": "GET",
+          "path": "config.data"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET_MERGE",
+          "value": {
+            "includeNested": true
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "roles"
+        },
+        {
+          "type": "GET",
+          "path": "accumulate.watchParams"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": "local:requestParams.includeNested"
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "roles"
+        },
+        {
+          "type": "GET",
+          "path": "config.api.payload"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET_MERGE",
+          "value": {
+            "includeSubtree": "local:requestParams.includeNested"
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "role_cell"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 2,
+          "deleteCount": 0,
+          "value": {
+            "ref": "role-connector-description",
+            "type": "TEXT",
+            "config": {
+              "fieldLabel": "{{record:connectorDescription}}",
+              "tooltip": "{{record:connectorDescription}}",
+              "componentAttrs": {
+                "lines": 6,
+                "class": "text-wrap"
+              }
+            },
+            "behavior": [
+              {
+                "type": "HIDDEN",
+                "config": {
+                  "condition": {
+                    "property": "record:connectorDescription",
+                    "operator": "eq",
+                    "value": [""]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

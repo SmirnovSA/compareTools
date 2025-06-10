@@ -1,0 +1,78 @@
+{
+  "__revisionModded": "f5bb35ab",
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "users"
+        },
+        {
+          "type": "GET",
+          "path": "config.readyToStart",
+          "ignoreUndefined": true
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": false
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "users"
+        },
+        {
+          "type": "GET",
+          "path": "config.behavior",
+          "ignoreUndefined": true
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": [
+            {
+              "type": "BINARY",
+              "config": {
+                "condition": {
+                  "property": "{{route:$path}}",
+                    "operator": "includes",
+                    "value": ["reports"]
+                },
+                "config": {
+                  "readyToStart": true,
+                  "api": {
+                    "url": "v3/users/report/{{route:$path|split_string:slash:all:2}}"
+                  }
+                },
+                "defaultConfig": {
+                  "readyToStart": true,
+                  "api": {
+                    "url": "v3/users"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

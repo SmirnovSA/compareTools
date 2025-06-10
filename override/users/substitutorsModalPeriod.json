@@ -1,0 +1,61 @@
+{
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "substitutor_period_inner"
+        },
+        {
+          "type": "GET",
+          "path": "items.0.items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 1,
+          "deleteCount": 1,
+          "value": {
+            "type": "LAYOUT_ROW",
+            "config": {
+              "value": "range"
+            },
+            "items": [
+              {
+                "type": "DATE_EDITOR",
+                "ref": "rangePicker",
+                "config": {
+                  "value": "local:modelConfig.period",
+                  "fieldLabel": { "type": "TEMPLATE", "config": { "tpl": "дд.мм.гггг - дд.мм.гггг" } },
+                  "setRange": true,
+                  "useTime": false,
+                  "sendTime": true,
+                  "usePeriodPresets": false,
+                  "disabled": false,
+                  "clearable": true,
+                  "componentAttrs": {
+                    "style": "width: 300px; padding-bottom: 0px"
+                  }
+                },
+                "behavior": [
+                  {
+                    "type": "DISABLED",
+                    "config": {
+                      "condition": {
+                        "property": "raw:modelConfig.radioValue",
+                        "operator": "eq",
+                        "inverse": true,
+                        "value": ["range"]
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

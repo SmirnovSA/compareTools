@@ -1,0 +1,56 @@
+{
+  "__revisionModded": "f5bb35ab",
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "role_name_cell"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "ref": "role-connector-description",
+            "type": "TEXT",
+            "config": {
+              "fieldLabel": "{{record:roleName.connectorDescription}}",
+              "tooltip": "{{record:roleName.connectorDescription}}",
+              "componentAttrs": {
+                "lines": 6,
+                "class": "text-wrap"
+              }
+            },
+            "behavior": [
+              {
+                "type": "HIDDEN",
+                "config": {
+                  "condition": {
+                    "or": [
+                      {
+                        "property": "record:warnings.roleName",
+                        "operator": "empty",
+                        "inverse": true,
+                        "value": []
+                      },
+                      {
+                        "property": "record:roleName.connectorDescription",
+                        "operator": "eq",
+                        "value": ["11"]
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

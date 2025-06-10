@@ -1,0 +1,131 @@
+{
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "fields"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": [
+            {
+              "itemPath": "displayName",
+              "format": "polyStringList",
+              "name": "fullName",
+              "multiple": false,
+              "value": "raw:formData.data.fullName"
+            },
+            {
+              "itemPath": "description",
+              "format": "string",
+              "name": "description",
+              "multiple": false,
+              "value": "raw:formData.data.description"
+            },
+            {
+              "itemPath": "parentOrgRef",
+              "format": "catalogPickerReference",
+              "name": "parentOrgRef",
+              "multiple": false,
+              "value": "raw:formData.data.parentOrgRef"
+            },
+            {
+              "itemPath": "ownerRef",
+              "format": "userReference",
+              "name": "owner",
+              "multiple": true,
+              "value": "{{raw:formData.data.owner|take:id|empty:null}}"
+            },
+            {
+              "itemPath": "extension/inforesourceSource",
+              "format": "string",
+              "name": "source",
+              "multiple": false,
+              "value": "raw:formData.data.source"
+            },
+            {
+              "itemPath": "extension/UnderSystemSource",
+              "format": "string",
+              "name": "undersystem",
+              "multiple": false,
+              "value": "raw:formData.data.undersystem"
+            },
+            {
+              "itemPath": "extension/systems",
+              "format": "string",
+              "name": "systems",
+              "multiple": false,
+              "value": "raw:formData.data.systems"
+            },
+            {
+              "itemPath": "extension/Confidentiality",
+              "format": "string",
+              "name": "Confidentiality",
+              "multiple": false,
+              "value": "raw:formData.data.Confidentiality"
+            },
+            {
+              "itemPath": "extension/Organization",
+              "format": "orgPickerReference",
+              "name": "Organization",
+              "multiple": true,
+              "value": "raw:formData.data.Organization"
+            },
+            {
+              "itemPath": "extension/TypeIR",
+              "format": "string",
+              "name": "TypeIR",
+              "multiple": false,
+              "value": "raw:formData.data.TypeIR"
+            },
+            {
+              "itemPath": "extension/status",
+              "format": "string",
+              "name": "status",
+              "multiple": false,
+              "value": "raw:formData.data.status"
+            },
+            {
+              "itemPath": "extension/ownerIR",
+              "format": "orgPickerReference",
+              "name": "ownerIR",
+              "multiple": true,
+              "value": "raw:formData.data.ownerIR"
+            },
+            {
+              "itemPath": "extension/Representative",
+              "format": "userReference",
+              "name": "Representative",
+              "multiple": true,
+              "value": "{{raw:formData.data.Representative|take:id|empty:null}}"
+            },
+            {
+              "itemPath": "extension/ResponsibleRepresentative",
+              "format": "userReference",
+              "name": "ResponsibleRepresentative",
+              "multiple": true,
+              "value": "{{raw:formData.data.ResponsibleRepresentative|take:id|empty:null}}"
+            },
+            {
+              "itemPath": "extension/adminIS",
+              "format": "userReference",
+              "name": "adminIS",
+              "multiple": true,
+              "value": "{{raw:formData.data.adminIS|take:id|empty:null}}"
+            },
+            {
+              "itemPath": "extension/inforesourceExpert",
+              "format": "userReference",
+              "name": "inforesourceExpert",
+              "multiple": true,
+              "value": "{{raw:formData.data.inforesourceExpert|take:id|empty:null}}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

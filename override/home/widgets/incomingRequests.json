@@ -1,0 +1,110 @@
+{
+  "__revisionModded": "f5bb35ab",
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "incoming"
+        },
+        {
+          "type": "GET",
+          "path": "config.api.url"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "v3/requests/incoming"
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "gen-layout_flex_column-0-reusable_control-0-iterator"
+        },
+        {
+          "type": "GET",
+          "path": "items.0.items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "type": "ICON",
+            "ref": "request-conflict-icon",
+            "config": {
+              "icon": {
+                "type": "SVG_PATH",
+                "config": {
+                  "tooltip": "Найдены конфликты",
+                  "class": "text-negative q-ml-xs",
+                  "size": "xs",
+                  "value": "M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"
+                }
+              }
+            },
+            "behavior": [
+              {
+                "type": "SHOW",
+                "config": {
+                  "condition": {
+                    "property": "record:hasConflicts",
+                    "operator": "eq",
+                    "value": [true]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "request_date_link"
+        },
+        {
+          "type": "GET",
+          "ignoreUndefined": true,
+          "path": "behavior"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": [
+            {
+              "type": "BINARY",
+              "config": {
+                "condition": {
+                  "property": "{{record:requestNumber.number}}",
+                  "operator": "in",
+                  "value": ["", null]
+                },
+                "config": {
+                  "to": "/requests/{{record:number}}"
+                },
+                "defaultConfig": {
+                  "to": "/requests/{{record:requestNumber.number}}"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

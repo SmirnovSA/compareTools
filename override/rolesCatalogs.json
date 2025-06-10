@@ -1,0 +1,663 @@
+{
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "access"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": [
+            {
+              "condition": {
+                "property": "{{global:auth.currentUser.rights|permit:rolesRoleCatalog}}",
+                "inverse": true,
+                "operator": "eq",
+                "value": [true]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "owner"
+        },
+        {
+          "type": "GET",
+          "path": "config.fieldLabel.config.tpl"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "Согласующий"
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "create-catalog"
+        },
+        {
+          "type": "GET",
+          "path": "actions"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": [
+            {
+              "name": "click",
+              "type": "MODAL",
+              "id": "addRoleModal",
+              "config": {
+                "url": "/config/rolesCatalogs/modal/infoEdit",
+                "initialConfig": {
+                  "title": {
+                    "type": "TEMPLATE",
+                    "config": {
+                      "tpl": "Новый информационный ресурс"
+                    }
+                  }
+                },
+                "modelConfig": {
+                  "createMode": true,
+                  "cardId": "raw:requestParams.currentNodeId"
+                }
+              }
+            },
+            {
+              "name": "modalSave:addRoleModal",
+              "type": "API",
+              "id": "createCatalog",
+              "config": {
+                "method": "POST",
+                "url": "v2/data-forms/catalog/create",
+                "payload": "payload:modalSave.addRoleModal.formData"
+              },
+              "condition": {
+                "property": "payload:modalSave.addRoleModal.formState.createRequest",
+                "operator": "eq",
+                "inverse": true,
+                "value": [true]
+              }
+            },
+            {
+              "name": "requestSuccess:createCatalog",
+              "type": "API",
+              "id": "createLandscapes",
+              "config": {
+                "method": "PUT",
+                "url": "rolecatalog/{{payload:requestSuccess.createCatalog.oid}}/lukoil/landscapes",
+                "payload": "{{{payload:modalSave.addRoleModal.landscapes|take:id}}}"
+              }
+            },
+            {
+              "name": "requestSuccess:createLandscapes",
+              "type": "NOTIFY_CUSTOM",
+              "config": {
+                "duration": 5000,
+                "position": "top-right",
+                "field": {
+                  "type": "NOTIFICATION_BASIC",
+                  "ref": "notification",
+                  "items": [
+                    {
+                      "type": "LAYOUT_ROW",
+                      "items": [
+                        {
+                          "type": "TEXT",
+                          "config": {
+                            "fieldLabel": {
+                              "type": "TEMPLATE",
+                              "config": {
+                                "tpl": "Информация"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "TEXT",
+                          "config": {
+                            "fieldLabel": {
+                              "type": "TEMPLATE",
+                              "config": {
+                                "tpl": "Информационный ресурс %{0} успешно создан.",
+                                "args": {
+                                  "0": "{{payload:requestSuccess.createCatalog.data.fullName}}"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "requestSuccess:createLandscapes",
+              "type": "RELOAD",
+              "config": {
+                "model": [
+                  {
+                    "key": "requests",
+                    "considerAccumulation": true
+                  }
+                ]
+              }
+            },
+            {
+              "type": "MODAL",
+              "name": "modalSave:addRoleModal",
+              "id": "commentModal",
+              "config": {
+                "initialConfig": {
+                  "title": {
+                    "type": "TEMPLATE",
+                    "config": {
+                      "tpl": "Комментарий к заявке"
+                    }
+                  },
+                  "subTitle": {
+                    "type": "TEMPLATE",
+                    "config": {
+                      "tpl": "Укажите подробности заявки: в связи с чем она составляется. Это поможет оперативнее принять решение."
+                    }
+                  }
+                },
+                "url": "config/modal/comment"
+              },
+              "condition": {
+                "property": "payload:modalSave.addRoleModal.formState.createRequest",
+                "operator": "eq",
+                "value": [true]
+              }
+            },
+            {
+              "name": "modalSave:commentModal",
+              "type": "API",
+              "id": "updateRequest",
+              "config": {
+                "url": "v2/prism-objects/{{raw:requestParams.currentNodeId}}/create-update-request",
+                "method": "PATCH",
+                "payload": {
+                  "fields": "payload:modalSave.addRoleModal.fields",
+                  "comment": "payload:modalSave.commentModal.comment"
+                },
+                "id": "successInfoEdit"
+              },
+              "behavior": [
+                {
+                  "type": "BINARY",
+                  "config": {
+                    "condition": {
+                      "property": "raw:requestParams.currentNodeId",
+                      "operator": "empty",
+                      "debug": true,
+                      "value": [true]
+                    },
+                    "config": {
+                      "id": "createRequest",
+                      "config": {
+                        "method": "POST",
+                        "url": "v2/prism-object-templates/catalog/create-new-request"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "requestSuccess:updateRequest",
+              "type": "NOTIFY_CUSTOM",
+              "config": {
+                "duration": 5000,
+                "position": "top-right",
+                "field": {
+                  "type": "NOTIFICATION_BASIC",
+                  "ref": "notification",
+                  "items": [
+                    {
+                      "type": "LAYOUT_ROW",
+                      "items": [
+                        {
+                          "type": "TEXT",
+                          "config": {
+                            "fieldLabel": {
+                              "type": "TEMPLATE",
+                              "config": {
+                                "tpl": "Информация"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "TEXT_TRANSLATED",
+                          "config": {
+                            "class": "text-wrap",
+                            "tpl": "Заявка %{link} на изменение каталога ролей успешно создана!"
+                          },
+                          "items": [
+                            {
+                              "type": "ROUTER_LINK",
+                              "config": {
+                                "toSlot": "link",
+                                "fieldLabel": "№{{payload:requestSuccess.updateRequest.requestNumber.0.displayNumber}}",
+                                "to": "/requests/{{payload:requestSuccess.updateRequest.requestNumber.0.number}}"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "requestSuccess:createRequest",
+              "type": "NOTIFY_CUSTOM",
+              "config": {
+                "duration": 5000,
+                "position": "top-right",
+                "field": {
+                  "type": "NOTIFICATION_BASIC",
+                  "ref": "notification",
+                  "items": [
+                    {
+                      "type": "LAYOUT_ROW",
+                      "items": [
+                        {
+                          "type": "TEXT",
+                          "config": {
+                            "fieldLabel": {
+                              "type": "TEMPLATE",
+                              "config": {
+                                "tpl": "Информация"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "TEXT_TRANSLATED",
+                          "config": {
+                            "class": "text-wrap",
+                            "tpl": "Заявка %{link} на создание каталога ролей успешно создана!"
+                          },
+                          "items": [
+                            {
+                              "type": "ROUTER_LINK",
+                              "config": {
+                                "toSlot": "link",
+                                "fieldLabel": "№{{payload:requestSuccess.createRequest.requestNumber.0.displayNumber}}",
+                                "to": "/requests/{{payload:requestSuccess.createRequest.requestNumber.0.number}}"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "requestFail",
+              "type": "MODAL",
+              "id": "errorObjModal",
+              "config": {
+                "initialConfig": {
+                  "title": {
+                    "type": "TEMPLATE",
+                    "config": {
+                      "tpl": "Ошибка"
+                    }
+                  },
+                  "message": {
+                    "type": "TEMPLATE",
+                    "config": {
+                      "tpl": "{{payload:userMessage}}"
+                    }
+                  },
+                  "pageName": {
+                    "type": "TEMPLATE",
+                    "config": {
+                      "tpl": "Карточка информационного ресурса"
+                    }
+                  }
+                },
+                "modelConfig": {
+                  "error": {
+                    "message": "{{payload:currentException}} {{payload:exceptionMessage}}"
+                  }
+                },
+                "url": "config/modal/informationWindow"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "requests"
+        },
+        {
+          "type": "GET",
+          "path": "config.api.url"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "v3/rolecatalog/items"
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "role-container"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 2,
+          "deleteCount": 0,
+          "value": {
+            "ref": "role-connector-description",
+            "type": "TEXT",
+            "config": {
+              "fieldLabel": "{{record:connectorDescription}}",
+              "tooltip": "{{record:connectorDescription}}",
+              "componentAttrs": {
+                "lines": 6,
+                "class": "text-wrap"
+              }
+            },
+            "behavior": [
+              {
+                "type": "HIDDEN",
+                "config": {
+                  "condition": {
+                    "property": "record:connectorDescription",
+                    "operator": "eq",
+                    "value": [""]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "requests"
+        },
+        {
+          "type": "GET",
+          "path": "config.api.payload.filter"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "property": "ownerIR",
+            "operator": "in",
+            "value": "{{local:requestParams.advancedFilter.ownerIRs|take:id}}"
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "requestParams"
+        },
+        {
+          "type": "GET",
+          "path": "config.data.advancedFilter.ownerIRs",
+          "ignoreUndefined": true
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": []
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "list-row"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 4,
+          "deleteCount": 0,
+          "value": [
+            {
+              "type": "CELL_LIST",
+              "config": {
+                "fieldLabel": "",
+                "data": "record:ownerIRs",
+                "limit": 3,
+                "limitText": "и еще {{rest}}",
+                "componentAttrs": {
+                  "grow": 1
+                },
+                "widget": {
+                  "type": "TEXT",
+                  "config": {
+                    "componentAttrs": {
+                      "class": "full-width"
+                    }
+                  },
+                  "items": [
+                    {
+                      "type": "LINK",
+                      "config": {
+                        "class": "ellipsis-lines",
+                        "fieldLabel": "{{record:name|emptyDash}}",
+                        "tooltip": {
+                          "type": "TEMPLATE",
+                          "config": {
+                            "tpl": "Открыть карточку подразделения-владельца ИР"
+                          }
+                        },
+                        "to": "orgstruct/card/{{record:id}}/info"
+                      }
+                    }
+                  ]
+                }
+              },
+              "actions": [
+                {
+                  "name": "rest-click",
+                  "type": "FIELD_MUTATE",
+                  "config": {
+                    "data": {
+                      "limit": "{{record:ownerIRs.length}}"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "CELL_EMPTY",
+              "config": {
+                "componentAttrs": {
+                  "grow": 0.3,
+                  "minWidth": 115
+                }
+              },
+              "items": [
+                {
+                  "type": "BADGE",
+                  "config": {
+                    "fieldLabel": "record:status",
+                    "readonly": true,
+                    "componentAttrs": {
+                      "size": "12px"
+                    }
+                  },
+                  "behavior": [
+                    {
+                      "type": "SWITCH",
+                      "config": {
+                        "case": [
+                          {
+                            "condition": {
+                              "property": "record:status",
+                              "operator": "eq",
+                              "value": ["Эксплуатируемый"]
+                            },
+                            "config": {
+                              "role": "success"
+                            }
+                          },
+                          {
+                            "condition": {
+                              "property": "record:status",
+                              "operator": "eq",
+                              "value": ["Архивный"]
+                            },
+                            "config": {
+                              "role": "neutral"
+                            }
+                          }
+                        ],
+                        "defaultConfig": {
+                          "role": "info"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "roles-catalogs-list"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 3,
+          "deleteCount": 0,
+          "value": [
+            {
+              "type": "LIST_TH",
+              "config": {
+                "fieldLabel": {
+                  "type": "TEMPLATE",
+                  "config": {
+                    "tpl": "Подразделение-владелец ИР"
+                  }
+                },
+                "componentAttrs": {
+                  "grow": 1,
+                  "headerClass": "col"
+                }
+              }
+            },
+            {
+              "type": "LIST_TH",
+              "config": {
+                "fieldLabel": {
+                  "type": "TEMPLATE",
+                  "config": {
+                    "tpl": "Статус"
+                  }
+                },
+                "componentAttrs": {
+                  "grow": 0.3,
+                  "minWidth": 115,
+                  "headerClass": "col"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "reason": "INRLUK-2858",
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "total-counter"
+        }
+      ],
+      "modify": [
+        {
+          "type": "DEL"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="./favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preload" href="./fonts/ONYOne-Light.otf" as="font" type="font/otf" crossorigin />
+    <link rel="preload" href="./fonts/ONYOne-Medium.otf" as="font" type="font/otf" crossorigin />
+    <link rel="preload" href="./fonts/ONYOne-Regular.otf" as="font" type="font/otf" crossorigin />
+    <title>App</title>
+    <style>
+      @font-face {
+        font-family: "Ony";
+        src: url("fonts/ONYOne-Light.otf") format("opentype");
+        font-weight: 100;
+        font-style: normal;
+      }
+
+      @font-face {
+        font-family: "Ony";
+        src: url("fonts/ONYOne-Light.otf") format("opentype");
+        font-weight: 200;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Ony";
+        src: url("fonts/ONYOne-Light.otf") format("opentype");
+        font-weight: 300;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Ony";
+        src: url("fonts/ONYOne-Light.otf") format("opentype");
+        font-weight: 400;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Ony";
+        src: url("fonts/ONYOne-Regular.otf") format("opentype");
+        font-weight: 500;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Ony";
+        src: url("fonts/ONYOne-Regular.otf") format("opentype");
+        font-weight: 600;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Ony";
+        src: url("fonts/ONYOne-Medium.otf") format("opentype");
+        font-weight: 700;
+        font-style: normal;
+      }
+    </style>
+    <style>
+      html,
+      body {
+        margin: 0;
+      }
+      #app {
+        opacity: 0;
+      }
+      #app.fade-in {
+        visibility: visible;
+        opacity: 1;
+        transition: visibility 300ms 300ms, opacity 300ms 300ms linear;
+      }
+      #q-app-loading.fade-out {
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility 300ms, opacity 300ms linear;
+      }
+      #q-app-loading {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #f1f1f1;
+      }
+      .initial-dark #q-app-loading {
+        background: #2b323a;
+      }
+      #q-app-loading-mask {
+        width: 0;
+        height: 0;
+        position: absolute;
+      }
+      .center-box {
+        height: 80px;
+        width: 80px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #1d1e22;
+      }
+      .animated-splash {
+        max-height: 216px;
+        clip-path: url(#logo-mask);
+        max-width: 250px;
+        transform: scale(0.3);
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        overflow: hidden;
+        z-index: 0;
+      }
+      @property --splash-00 {
+        syntax: "<percentage>";
+        initial-value: 0%;
+        inherits: false;
+      }
+      @property --splash-01 {
+        syntax: "<percentage>";
+        initial-value: 0%;
+        inherits: false;
+      }
+      @property --splash-10 {
+        syntax: "<percentage>";
+        initial-value: 0%;
+        inherits: false;
+      }
+      @property --splash-11 {
+        syntax: "<percentage>";
+        initial-value: 0%;
+        inherits: false;
+      }
+      .animated-splash:before {
+        will-change: transform, background-image;
+        content: "";
+        z-index: -2;
+        text-align: center;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(0deg);
+        position: absolute;
+        width: 99999px;
+        height: 99999px;
+        background-repeat: no-repeat;
+        background-position: 0 0;
+        background-image: conic-gradient(
+          from 204deg at 50% 50%,
+          transparent var(--splash-00),
+          #fe6e36 var(--splash-01),
+          #fe6e36 var(--splash-10),
+          transparent var(--splash-11)
+        );
+        animation: spash-rotate 3s infinite ease 400ms;
+      }
+
+      @keyframes spash-rotate {
+        0% {
+          transform: translate(-50%, -50%);
+          --splash-00: 0%;
+          --splash-01: 1%;
+          --splash-10: 1%;
+          --splash-11: 2%;
+        }
+        50% {
+          transform: translate(-50%, -50%);
+          --splash-00: 0%;
+          --splash-01: 1%;
+          --splash-10: 98%;
+          --splash-11: 99%;
+        }
+        100% {
+          transform: translate(-50%, -50%);
+          --splash-00: 97%;
+          --splash-01: 98%;
+          --splash-10: 98%;
+          --splash-11: 99%;
+        }
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-eb429e7a.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/chart-4f629171.js">
+    <link rel="modulepreload" crossorigin href="./assets/vendor-bfe86f1b.js">
+    <link rel="modulepreload" crossorigin href="./assets/quasar-2df2ff07.js">
+    <link rel="modulepreload" crossorigin href="./assets/components-67e14657.js">
+    <link rel="stylesheet" href="./assets/vendor-02435c49.css">
+    <link rel="stylesheet" href="./assets/quasar-76a27cd3.css">
+    <link rel="stylesheet" href="./assets/components-cd27ff6a.css">
+    <link rel="stylesheet" href="./assets/index-30212112.css">
+  </head>
+  <body>
+    <script>
+      var splashStartTime = performance.now();
+      try {
+        var theme = localStorage.getItem("userData") !== null
+          ? JSON.parse(localStorage.getItem("userData")).theme || "default"
+          : "default";
+      }  catch (e) {
+        var theme = "default";
+      }
+      document.body.classList.toggle("initial-dark", theme === "dark");
+      if (localStorage.getItem("favicon") && document.querySelector("link[rel=icon]")) {
+        document.querySelector("link[rel=icon]").setAttribute("href", localStorage.getItem("favicon"));
+      }
+    </script>
+    <div id="app"></div>
+    <div id="q-app-loading">
+      <div class="animated-splash"></div>
+      <svg id="q-app-loading-mask" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 235 216" aria-hidden="true">
+        <defs>
+          <clipPath id="logo-mask">
+            <path
+              d="M204.64 35.8047C178.931 8.39128 138.468 -4.79161 98.977 1.58158C65.1401 6.6452 35.3672 26.114 17.256 55.0989C-0.413385 83.298 -4.74239 117.259 5.32917 148.252C14.5173 177.499 37.0458 202.555 65.6702 215.04L67.9672 216L71.4128 209.19L69.2041 207.968C47.8241 196.095 31.5682 177.324 23.4403 155.149C9.74652 119.093 20.2598 76.401 49.061 51.2575C71.3244 31.6141 99.0654 23.5822 127.16 28.6458C156.668 33.9713 181.935 53.0909 196.601 81.0281C215.065 116.299 209.588 160.3 182.642 193.126L181.228 194.872L185.999 200.111L187.854 198.976C208.086 186.491 223.635 165.626 230.526 141.879C241.481 105.037 231.321 63.3927 204.64 35.7174V35.8047Z"
+            ></path>
+          </clipPath>
+        </defs>
+      </svg>
+    </div>
+    
+  </body>
+</html>

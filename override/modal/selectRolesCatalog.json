@@ -1,0 +1,252 @@
+{
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "modelConfig"
+        },
+        {
+          "type": "GET",
+          "path": "config.data"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET_MERGE",
+          "value": {
+            "requester": null,
+            "empOids": [],
+            "includeNested": true
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "requests"
+        },
+        {
+          "type": "GET",
+          "path": "config.api.url"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "v3/rolecatalog/items"
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "requests"
+        },
+        {
+          "type": "GET",
+          "path": "config.api.payload"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET_MERGE",
+          "value": {
+            "empOids": "local:modelConfig.empOids",
+            "forMe": false
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "requests"
+        },
+        {
+          "type": "GET",
+          "path": "config"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET_MERGE",
+          "value": {
+            "readyToStart": false,
+            "behavior": [
+              {
+                "type": "BINARY",
+                "config": {
+                  "condition": {
+                    "property": "local:modelConfig.requester",
+                    "operator": "eq",
+                    "value": ["me"]
+                  },
+                  "config": {
+                    "readyToStart": true,
+                    "api": {
+                      "payload": {
+                        "forMe": true
+                      }
+                    }
+                  },
+                  "defaultConfig": {
+                    "readyToStart": true,
+                    "api": {
+                      "payload": {
+                        "forMe": false
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "owner"
+        },
+        {
+          "type": "GET",
+          "path": "config.fieldLabel.config.tpl"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "Согласующий"
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "role-catalogs"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "type": "LIST_TH",
+            "config": {
+              "fieldLabel": {
+                "type": "TEMPLATE",
+                "config": {
+                  "tpl": "Подразделение-владелец ИР"
+                }
+              },
+              "componentAttrs": {
+                "grow": 1,
+                "headerClass": "col"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "role_catalogs_row"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "type": "CELL_LIST",
+            "config": {
+              "fieldLabel": "",
+              "data": "record:ownerIRs",
+              "limit": 3,
+              "limitText": "и еще {{rest}}",
+              "componentAttrs": {
+                "grow": 1
+              },
+              "widget": {
+                "type": "TEXT",
+                "config": {
+                  "componentAttrs": {
+                    "class": "full-width"
+                  }
+                },
+                "items": [
+                  {
+                    "type": "LINK",
+                    "config": {
+                      "class": "ellipsis-lines",
+                      "fieldLabel": "{{record:name|emptyDash}}",
+                      "tooltip": {
+                        "type": "TEMPLATE",
+                        "config": {
+                          "tpl": "Открыть карточку подразделения-владельца ИР"
+                        }
+                      },
+                      "to": "orgstruct/card/{{record:id}}/info"
+                    }
+                  }
+                ]
+              }
+            },
+            "actions": [
+              {
+                "name": "rest-click",
+                "type": "FIELD_MUTATE",
+                "config": {
+                  "data": {
+                    "limit": "{{record:ownerIRs.length}}"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

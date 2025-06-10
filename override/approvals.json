@@ -1,0 +1,162 @@
+{
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "route_name"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": []
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "route_widget"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 1,
+          "deleteCount": 0,
+          "value": {
+            "type": "CELL_EMPTY",
+            "config": {
+              "componentAttrs": {
+                "minWidth": 120
+              }
+            },
+            "items": [
+              {
+                "type": "LAYOUT_ROW",
+                "config": {
+                  "componentAttrs": {
+                    "componentClass": "flex row col-grow items-center"
+                  }
+                },
+                "items": [
+                  {
+                    "type": "ICON",
+                    "ref": "drag_icon",
+                    "config": {
+                      "class": "self-center cursor-pointer",
+                      "componentAttrs": {
+                        "size": "md",
+                        "style": "opacity:0.6;"
+                      },
+                      "icon": {
+                        "type": "LIBRARY",
+                        "config": {
+                          "value": "height"
+                        },
+                        "ref": "gen-layout_flex_column-2-scroll_area-0-list_inline-list_row-1-cell_link-0-icon-library"
+                      }
+                    },
+                    "behavior": [
+                      {
+                        "type": "HIDDEN",
+                        "config": {
+                          "condition": {
+                            "and": [
+                              {
+                                "property": "{{global:auth.currentUser.rights|permit:approvalsCrud}}",
+                                "operator": "eq",
+                                "value": ["false"]
+                              },
+                              {
+                                "property": "{{local:routes.metaData.accesses|permit:canEdit}}",
+                                "operator": "eq",
+                                "value": ["false"]
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "BADGE",
+                    "config": {
+                      "fieldLabel": "{{record:$itemIndex|plus:1}}",
+                      "role": "neutral",
+                      "componentAttrs": {
+                        "style": {
+                          "height": "36px",
+                          "width": "36px",
+                          "font-size":"18px"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "routes-name-th"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": []
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "routes_virtual_list"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 0,
+          "deleteCount": 0,
+          "value": {
+            "type": "LIST_TH",
+            "ref": "routes-number-th",
+            "config": {
+              "componentAttrs": {
+                "headerClass": "col",
+                "minWidth": 120
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

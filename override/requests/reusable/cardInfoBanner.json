@@ -1,0 +1,51 @@
+{
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "comment"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "type": "ICON",
+            "config": {
+              "hidden": true,
+              "componentAttrs": {
+                "size": "md",
+                "style": {
+                  "color": "var(--q-icon-warning-color)",
+                  "margin-left": "-0.625rem"
+                }
+              },
+              "icon": {
+                "type": "LIBRARY",
+                "config": {
+                  "value": "warning"
+                }
+              }
+            },
+            "behavior": [
+              {
+                "type": "HIDDEN",
+                "config": {
+                  "condition": {
+                    "property": "record:comment",
+                    "operator": "empty"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

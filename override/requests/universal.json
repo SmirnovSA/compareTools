@@ -1,0 +1,36 @@
+{
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "delegate"
+        },
+        {
+          "type": "GET",
+          "path": "behavior"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "type": "HIDDEN",
+            "config": {
+              "condition": {
+                "or": [
+                  {
+                    "property": "global:auth.currentUser.rights.all",
+                    "operator": "eq",
+                    "inverse": true,
+                    "value": [true]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

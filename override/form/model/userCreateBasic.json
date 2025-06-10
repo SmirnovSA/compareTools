@@ -1,0 +1,47 @@
+{
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "fields"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": [
+            {
+              "itemPath": "user.familyName",
+              "name": "lastName",
+              "format": "polyStringList",
+              "multiple": false,
+              "value": "raw:formDataUser.data.lastName"
+            },
+            {
+              "itemPath": "user.givenName",
+              "name": "firstName",
+              "format": "polyStringList",
+              "multiple": false,
+              "value": "raw:formDataUser.data.firstName"
+            },
+            {
+              "itemPath": "user.additionalName",
+              "name": "additionalName",
+              "format": "polyStringList",
+              "multiple": false,
+              "value": "raw:formDataUser.data.additionalName"
+            },
+            {
+              "itemPath": "user.dateOfBirth",
+              "name": "dateOfBirth",
+              "format": "xmlGrigorianCalendar",
+              "multiple": false,
+              "value": "raw:formDataUser.data.dateOfBirth"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
