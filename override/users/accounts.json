@@ -1,0 +1,122 @@
+{
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "entitlements"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET_MERGE",
+          "value": {
+            "config": {
+              "hidden": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "entitlements_cell"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET_MERGE",
+          "value": {
+            "config": {
+              "hidden": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "nameCell"
+        },
+        {
+          "type": "GET",
+          "path": "items.0.items.0.items.2.items.0.items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 1,
+          "deleteCount": 1,
+          "value": []
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "nameCell"
+        },
+        {
+          "type": "GET",
+          "path": "items.0.items.0.items.2.items.1"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET_MERGE",
+          "value": {
+            "behavior": [
+              {
+                "type": "BINARY",
+                "config": {
+                  "condition": {
+                    "property": "record:resourceDescription",
+                    "operator": "empty",
+                    "inverse": true,
+                    "value": []
+                  },
+                  "config": {
+                    "fieldLabel": "record:resourceDescription"
+                  },
+                  "defaultConfig": {
+                    "fieldLabel": "record:resourceName"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "userAccounts"
+        },
+        {
+          "type": "GET",
+          "path": "config.api.url"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "v2/user/{{route:users}}/accounts"
+        }
+      ]
+    }
+  ]
+}

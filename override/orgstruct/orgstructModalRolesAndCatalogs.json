@@ -1,0 +1,71 @@
+{
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "baseRoles"
+        },
+        {
+          "type": "GET",
+          "path": "config.api.url"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "v3/org-struct/{{config:id}}/base-roles?start={{local:requestParams.start}}&limit={{local:requestParams.limit}}&sort==%5B%7B\"property\":\"{{local:requestParams.sort.0.property}}\",\"direction\":\"{{local:requestParams.sort.0.direction}}\"%7D%5D&filter="
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "baseRoles_name"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 2,
+          "deleteCount": 0,
+          "value": {
+            "ref": "role-connector-description",
+            "type": "TEXT",
+            "config": {
+              "fieldLabel": "{{record:connectorDescription}}",
+              "tooltip": "{{record:connectorDescription}}",
+              "componentAttrs": {
+                "lines": 6,
+                "class": "text-wrap q-mt-sm"
+              }
+            },
+            "behavior": [
+              {
+                "type": "HIDDEN",
+                "config": {
+                  "condition": {
+                    "property": "record:connectorDescription",
+                    "operator": "eq",
+                    "value": [""]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

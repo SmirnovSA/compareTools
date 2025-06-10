@@ -1,0 +1,396 @@
+{
+  "type": "MODAL",
+  "model": [
+    {
+      "key": "modelConfig",
+      "type": "LOCAL",
+      "config": {
+        "includeInChanges": false,
+        "data": {
+          "selectedItems": {
+            "mode": "MULTIPLE",
+            "items": []
+          }
+        }
+      }
+    },
+    {
+      "key": "approvals",
+      "type": "REMOTE",
+      "accumulate": {
+        "enable": true,
+        "modelKey": "approvals",
+        "accumulateKeys": [
+          "items"
+        ],
+        "watchParams": [
+          "local:requestParams.sort",
+          "local:requestParams.search"
+        ]
+      },
+      "config": {
+        "api": {
+          "url": "rolecatalog/{{config:catalogId}}/lukoil/approvals",
+          "method": "POST",
+          "payload": {
+            "filter": [
+              {
+                "property": "search",
+                "operator": "custom",
+                "value": [
+                  "local:requestParams.search"
+                ]
+              }
+            ],
+            "limit": "local:requestParams.limit",
+            "sort": "local:requestParams.sort",
+            "start": "local:requestParams.start"
+          }
+        }
+      }
+    },
+    {
+      "key": "requestParams",
+      "type": "LOCAL",
+      "config": {
+        "includeInChanges": false,
+        "data": {
+          "search": "",
+          "limit": 15,
+          "start": 0,
+          "accumulatedLength": 0,
+          "sort": [
+            {
+              "direction": "ASC",
+              "property": "name"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "navigation": [],
+  "config": {
+    "position": "standard",
+    "height": "90%",
+    "width": "990px",
+    "maxWidth": "80vw",
+    "singleSelection": false,
+    "title": {
+      "type": "TEMPLATE",
+      "config": {
+        "tpl": "Выберите маршрут согласования"
+      }
+    },
+    "notFoundMessage": {
+      "type": "TEMPLATE",
+      "config": {
+        "tpl": "Не найдено ни одного маршрута"
+      }
+    },
+    "saveBtnText": {
+      "type": "TEMPLATE",
+      "config": {
+        "tpl": "Сохранить"
+      }
+    },
+    "catalogId": null
+  },
+  "items": [
+    {
+      "type": "MODAL_HEADER",
+      "ref": "modal-header",
+      "config": {
+        "fieldLabel": "config:title"
+      }
+    },
+    {
+      "type": "MODAL_INNER",
+      "items": [
+        {
+          "type": "LAYOUT_TOOLBAR",
+          "ref": "search-bar",
+          "config": {
+            "componentAttrs": {
+              "class": "no-padding q-mb-md"
+            }
+          },
+          "items": [
+            {
+              "ref": "search",
+              "type": "SEARCH",
+              "config": {
+                "class": "col",
+                "slot": "after",
+                "value": "local:requestParams.search",
+                "componentAttrs": {
+                  "placeholder": {
+                    "type": "TEMPLATE",
+                    "config": {
+                      "tpl": "Название маршрута"
+                    }
+                  },
+                  "debounce": 600,
+                  "advancedFilter": false,
+                  "searchText": {
+                    "type": "TEMPLATE",
+                    "config": {
+                      "tpl": "Найти"
+                    }
+                  },
+                  "searchBtnClass": "btn-primary q-btn--unelevated"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "EMPTY_LIST",
+          "ref": "users-empty-list",
+          "config": {
+            "ref": "out_empty",
+            "text": "config:notFoundMessage"
+          },
+          "behavior": [
+            {
+              "type": "HIDDEN",
+              "config": {
+                "condition": {
+                  "property": "local:requestParams.accumulatedLength",
+                  "operator": "eq",
+                  "inverse": true,
+                  "value": [
+                    "0"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ref": "users_inner_list",
+          "type": "LIST",
+          "config": {
+            "slot": "before",
+            "modelAccumulation": true,
+            "componentAttrs": {
+              "componentClass": "flex-fit reset-height"
+            },
+            "selectionModel": {
+              "value": "local:modelConfig.selectedItems",
+              "property": "id",
+              "bulkSelection": false,
+              "useSelection": true,
+              "commitData": true,
+              "singleSelection": "config:singleSelection",
+              "keepOnReload": true
+            },
+            "widget": {
+              "ref": "menu_item",
+              "type": "LIST_ROW",
+              "config": {},
+              "items": [
+                {
+                  "type": "REUSABLE_CONTROL",
+                  "ref": "warn",
+                  "config": {
+                    "toSlot": "warning",
+                    "url": "config/reusable/rowWarning",
+                    "overrideRecord": {
+                      "warning": "record:warning",
+                      "warningType": "record:warningType",
+                      "corruption": "record:corruption",
+                      "context": "userCorruption",
+                      "pageName": "Список пользователей"
+                    }
+                  }
+                },
+                {
+                  "ref": "name_cell",
+                  "type": "CELL_LINK",
+                  "config": {
+                    "fieldLabel": "{{{record:name}}}",
+                    "tooltip": "Перейти на страницу маршрута",
+                    "description": "{{{record:description}}}",
+                    "to": "/approvals/{{record:id}}",
+                    "hideIfEmpty": false,
+                    "componentAttrs": {
+                      "grow": 1
+                    },
+                    "class": "with-icon"
+                  },
+                  "behavior": [
+                    {
+                      "type": "BINARY",
+                      "config": {
+                        "condition": {
+                          "property": "record:requestTypes",
+                          "operator": "arrSome",
+                          "value": [
+                            "TRANSFER_PASSWORD"
+                          ]
+                        },
+                        "config": {
+                          "to": "/approvals/xml/{{record:id}}"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "ref": "requestTypes_cell",
+                  "type": "CELL_LIST",
+                  "config": {
+                    "data": "record:requestTypes",
+                    "componentAttrs": {
+                      "grow": 1
+                    },
+                    "widget": {
+                      "type": "TEXT",
+                      "config": {
+                        "fieldLabel": {
+                          "type": "TEMPLATE",
+                          "config": {
+                            "tpl": "record:$item",
+                            "context": "requests"
+                          }
+                        },
+                        "class": "no-padding"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "modelBindings": {
+            "data": "local:approvals.items",
+            "accumulatedData": "local:approvals.accumulatedData.items",
+            "offset": "local:requestParams.start",
+            "limit": "local:requestParams.limit",
+            "search": "local:requestParams.search",
+            "watchParams": [
+              "local:requestParams.search"
+            ],
+            "sort": "local:requestParams.sort",
+            "accumulatedLength": "local:requestParams.accumulatedLength"
+          },
+          "items": [
+            {
+              "type": "LIST_TH",
+              "ref": "name",
+              "config": {
+                "fieldLabel": {
+                  "type": "TEMPLATE",
+                  "config": {
+                    "tpl": "Название"
+                  }
+                },
+                "sortable": true,
+                "sortProperty": "name",
+                "componentAttrs": {
+                  "grow": 1,
+                  "headerClass": "col"
+                }
+              }
+            },
+            {
+              "type": "LIST_TH",
+              "ref": "requestTypes",
+              "config": {
+                "fieldLabel": {
+                  "type": "TEMPLATE",
+                  "config": {
+                    "tpl": "Для заявок"
+                  }
+                },
+                "componentAttrs": {
+                  "grow": 1,
+                  "headerClass": "col"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "MODAL_ACTIONS",
+      "ref": "actions",
+      "items": [
+        {
+          "type": "TOOLBAR_SPACER",
+          "config": {}
+        },
+        {
+          "ref": "submit",
+          "type": "BUTTON",
+          "config": {
+            "class": "btn-primary",
+            "componentAttrs": {
+              "unelevated": true,
+              "flat": false,
+              "outline": false,
+              "size": "md"
+            },
+            "fieldLabel": "config:saveBtnText"
+          },
+          "actions": [
+            {
+              "name": "click",
+              "type": "MODAL_SAVE",
+              "config": {
+                "payload": {
+                  "selectedItems": "raw:modelConfig.selectedItems"
+                }
+              }
+            }
+          ],
+          "behavior": [
+            {
+              "type": "DISABLED",
+              "config": {
+                "condition": {
+                  "or": [
+                    {
+                      "property": "raw:modelConfig.selectedItems.items.length",
+                      "operator": "eq",
+                      "value": [
+                        0
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ref": "reset",
+          "type": "BUTTON",
+          "config": {
+            "componentAttrs": {
+              "unelevated": true,
+              "flat": true,
+              "outline": false,
+              "size": "md"
+            },
+            "fieldLabel": {
+              "type": "TEMPLATE",
+              "config": {
+                "tpl": "Закрыть"
+              }
+            }
+          },
+          "actions": [
+            {
+              "name": "click",
+              "type": "RESET",
+              "config": {}
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,223 @@
+{
+  "mods": [
+    {
+      "reason": "исправление бага с отсутствием номера заявки в сообщении при создании заявки отзыва роли",
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "revoke_roles_user"
+        },
+        {
+          "type": "GET",
+          "path": "actions"
+        },
+        {
+          "type": "FIND",
+          "property": "name",
+          "operator": "eq",
+          "value": "requestSuccess"
+        },
+        {
+          "type": "GET",
+          "path": "config.field.items.0.items.1.items.0.config"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET_MERGE",
+          "value": {
+            "fieldLabel": "{{payload:requestSuccess.requestNumber.displayNumber}}",
+            "to": "/requests/{{payload:requestSuccess.requestNumber.number}}"
+          }
+        }
+      ]
+    },
+
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "revoke_roles_user"
+        },
+        {
+          "type": "GET",
+          "path": "config.fieldLabel.config.tpl"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "Отозвать (согласование Руководителем)"
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "revoke_roles_user"
+        },
+        {
+          "type": "GET",
+          "path": "actions",
+          "ignoreUndefined": true
+        },
+        {
+          "type": "FIND",
+          "property": "name",
+          "operator": "eq",
+          "value": "modalSave"
+        },
+        {
+          "type": "GET",
+          "path": "config.url"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "v2/user/roles/revoke"
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "revoke_roles_user"
+        },
+        {
+          "type": "GET",
+          "path": "actions",
+          "ignoreUndefined": true
+        },
+        {
+          "type": "FIND",
+          "property": "name",
+          "operator": "eq",
+          "value": "modalSave"
+        },
+        {
+          "type": "GET",
+          "path": "config.payload.revokeType",
+          "ignoreUndefined": true
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "manager"
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "users_dropdown"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 1,
+          "value": {
+            "type": "MENU_ITEM",
+            "config": {
+              "class": "toolbar-item",
+              "fieldLabel": {
+                "type": "TEMPLATE",
+                "config": {
+                  "tpl": "Отозвать (согласование Согласующим ресурса)"
+                }
+              }
+            },
+            "actions": [
+              {
+                "type": "MODAL",
+                "name": "click",
+                "id": "commentModal",
+                "config": {
+                  "initialConfig": {
+                    "title": {
+                      "type": "TEMPLATE",
+                      "config": {
+                        "tpl": "Комментарий к заявке"
+                      }
+                    }
+                  },
+                  "url": "config/modal/comment"
+                }
+              },
+              {
+                "name": "modalSave",
+                "type": "API",
+                "config": {
+                  "method": "POST",
+                  "url": "v2/user/roles/revoke",
+                  "payload": {
+                    "assignmentIds": "{{local:selectedUsers.items|take:id}}",
+                    "userId": "{{route:roles}}",
+                    "comment": "payload:modalSave.comment",
+                    "revokeType": "ownerIR"
+                  }
+                }
+              },
+              {
+                "name": "requestSuccess",
+                "type": "NOTIFY_CUSTOM",
+                "config": {
+                  "field": {
+                    "type": "NOTIFICATION_BASIC",
+                    "ref": "notification",
+                    "items": [
+                      {
+                        "type": "LAYOUT_ROW",
+                        "items": [
+                          {
+                            "type": "TEXT",
+                            "config": {
+                              "class": "text-bold",
+                              "fieldLabel": {
+                                "type": "TEMPLATE",
+                                "config": {
+                                  "tpl": "Информация"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "type": "TEXT_TRANSLATED",
+                            "config": {
+                              "class": "text-wrap",
+                              "tpl": "Заявка № %{link} на отзыв ролей успешно создана!",
+                              "context": "users"
+                            },
+                            "items": [
+                              {
+                                "type": "ROUTER_LINK",
+                                "config": {
+                                  "toSlot": "link",
+                                  "fieldLabel": "{{payload:requestSuccess.requestNumber.displayNumber}}",
+                                  "to": "/requests/{{payload:requestSuccess.requestNumber.number}}"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

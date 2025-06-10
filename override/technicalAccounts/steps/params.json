@@ -1,0 +1,142 @@
+{
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "formData"
+        },
+        {
+          "type": "GET",
+          "path": "config.data"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": {
+            "data": {
+              "resource": null,
+              "password": null,
+              "enabled": true,
+              "intent": null,
+              "intentGRC": null,
+              "params": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "attributes"
+        },
+        {
+          "type": "GET",
+          "path": "config.api"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": {
+            "url": "/robots/robot/get-resource-attributes/{{local:formData.data.resource.0.id}}/intent/__undefined__",
+            "method": "GET"
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "attributes"
+        },
+        {
+          "type": "GET",
+          "path": "config.behavior"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": [
+            {
+              "type": "BINARY",
+              "config": {
+                "condition": {
+                  "AND": [
+                    {
+                      "property": "local:formData.data.resource.0.id",
+                      "operator": "empty",
+                      "inverse": true,
+                      "value": null
+                    }
+                  ]
+                },
+                "config": {
+                  "readyToStart": true
+                },
+                "defaultConfig": {
+                  "readyToStart": false
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "type": "WATCH_EFFECT",
+            "config": {
+              "watchParams": ["local:formData.data.intentGRC"]
+            },
+            "actions": [
+              {
+                "name": "dataChange",
+                "id": "intentGRCChange",
+                "type": "BUBBLE",
+                "config": {
+                  "eventPayload": {
+                    "intentGRC": "local:formData.data.intentGRC"
+                  }
+                }
+              }
+            ],
+            "ref": "watch_effect-intentGRC123"
+          }
+        }
+      ]
+    }
+  ]
+}

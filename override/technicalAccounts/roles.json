@@ -1,0 +1,72 @@
+{
+  "__revisionModded": "f5bb35ab",
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "rolesData"
+        },
+        {
+          "type": "GET",
+          "path": "config.api.url"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "v3/robot-accounts/{{route:technicalAccounts}}/roles"
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "role-cell"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 0,
+          "deleteCount": 0,
+          "value": {
+            "ref": "role-connector-description",
+            "type": "TEXT",
+            "config": {
+              "fieldLabel": "{{record:connectorDescription}}",
+              "tooltip": "{{record:connectorDescription}}",
+              "componentAttrs": {
+                "lines": 6,
+                "class": "text-wrap"
+              }
+            },
+            "behavior": [
+              {
+                "type": "HIDDEN",
+                "config": {
+                  "condition": {
+                    "property": "record:connectorDescription",
+                    "operator": "eq",
+                    "value": [""]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

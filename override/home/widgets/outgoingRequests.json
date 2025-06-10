@@ -1,0 +1,40 @@
+{
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "request_date_link"
+        },
+        {
+          "type": "GET",
+          "ignoreUndefined": true,
+          "path": "behavior"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": [
+            {
+              "type": "BINARY",
+              "config": {
+                "condition": {
+                  "property": "{{record:requestNumber.number}}",
+                  "operator": "in",
+                  "value": ["", null]
+                },
+                "config": {
+                  "to": "/requests/{{record:number}}"
+                },
+                "defaultConfig": {
+                  "to": "/requests/{{record:requestNumber.number}}"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

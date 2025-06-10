@@ -1,0 +1,138 @@
+{
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "items"
+        },
+        {
+          "type": "FIND",
+          "property": "ref",
+          "operator": "eq",
+          "value": "tabs"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "ref": "tabConsumers",
+            "type": "ROUTE_TAB",
+            "config": {
+              "fieldLabel": "Потребители",
+              "id": "consumers",
+              "to": "/rolesCatalogs/{{route:id}}/card/consumers"
+            },
+            "behavior": [
+              {
+                "type": "SHOW",
+                "config": {
+                  "condition": {
+                    "property": "local:catalogInfo.metaData.accesses.canViewConsumersTab",
+                    "operator": "eq",
+                    "value": [true]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "navigation"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "key": "consumers",
+            "type": "REMOTE",
+            "config": {
+              "api": {
+                "url": "rolesCatalogs/card/consumers",
+                "method": "GET"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "tabInfo"
+        },
+        {
+          "type": "GET",
+          "path": "config.fieldLabel.config.tpl"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "Основная информация"
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "tabContent"
+        },
+        {
+          "type": "GET",
+          "path": "config.fieldLabel.config.tpl"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "Логические группы и роли"
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "tabUsers"
+        },
+        {
+          "type": "GET",
+          "path": "behavior.0.config.condition"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": {
+            "and": [
+              {
+                "property": "{{global:auth.currentUser.rights|permit:canViewUsersTab}}",
+                "operator": "eq",
+                "value": [true]
+              },
+              {
+                "property": "local:catalogInfo.metaData.accesses.canViewUsersTab",
+                "operator": "eq",
+                "value": [true]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

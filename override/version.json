@@ -1,0 +1,145 @@
+{
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "key": "pluginVersion",
+            "type": "REMOTE",
+            "config": {
+              "api": {
+                "url": "/config/pluginVersion",
+                "method": "GET"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "container"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_CONCAT",
+          "value": [
+            {
+              "type": "TEXT",
+              "config": {
+                "componentAttrs": {
+                  "class": "text-h6"
+                },
+                "fieldLabel": "Плагин сервера конфигурации"
+              }
+            },
+            {
+              "type": "LAYOUT_TOOLBAR",
+              "config": {
+                "componentAttrs": {
+                  "class": "items-baseline"
+                }
+              },
+              "items": [
+                {
+                  "type": "DISPLAY_FIELD",
+                  "config": {
+                    "fieldLabel": "Версия: ",
+                    "text": "local:pluginVersion.version"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "LAYOUT_TOOLBAR",
+              "config": {
+                "componentAttrs": {
+                  "class": "items-baseline"
+                }
+              },
+              "items": [
+                {
+                  "type": "DISPLAY_FIELD",
+                  "config": {
+                    "fieldLabel": "Хэш: ",
+                    "text": "local:pluginVersion.hash"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "LAYOUT_TOOLBAR",
+              "config": {
+                "componentAttrs": {
+                  "class": "items-baseline"
+                }
+              },
+              "items": [
+                {
+                  "type": "DISPLAY_FIELD",
+                  "config": {
+                    "fieldLabel": "Дата: ",
+                    "text": "{{local:pluginVersion.date|date}}"
+                  },
+                  "format": [
+                    {
+                      "type": "DATE",
+                      "key": "date",
+                      "config": {
+                        "date": "long",
+                        "time": true,
+                        "seconds": true
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "gen-layout_flex_column-0-title-0-icon_button"
+        },
+        {
+          "type": "GET",
+          "path": "actions"
+        },
+        {
+          "type": "FIND",
+          "property": "type",
+          "operator": "eq",
+          "value": "CLIPBOARD_ADD"
+        },
+        {
+          "type": "GET",
+          "path": "config.content"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "Клиент\nВерсия: {{global:app.versionData.version}}\nСборка: {{global:app.versionData.build}}\nХэш: {{global:app.versionData.hash}}\nДата: {{global:app.versionData.date|date_format:long:time:seconds}}\n\nСервер конфигурации\nВерсия: {{local:serverVersion.version}}\nХэш: {{local:serverVersion.hash}}\nДата: {{local:serverVersion.date|date_format:long:time:seconds}}\n\nСервер\nВерсия: {{local:apiVersion.about.version}}\nСборка: {{local:apiVersion.about.build}}\nХэш: {{local:apiVersion.about.hash}}\nДата: {{local:apiVersion.about.date|date_format:long:time:seconds}}\n\nПлагин сервера конфигурации\nВерсия: {{local:pluginVersion.version}}\nХэш: {{local:pluginVersion.hash}}\nДата: {{local:pluginVersion.date|date_format:long:time:seconds}}"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+@charset "UTF-8";.codeEditor{flex:1;position:relative;contain:strict}.codeEditor__wrapper{flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:min-content}.codeEditor .cm-editor{width:100%;height:100%;border:none}.codeEditor .cm-foldGutter span.opened:after{content:"▾"}.codeEditor .cm-foldGutter span.closed:after{content:"▸"}

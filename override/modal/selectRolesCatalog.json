@@ -1,0 +1,137 @@
+{
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "modelConfig"
+        },
+        {
+          "type": "GET",
+          "path": "config.data"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET_MERGE",
+          "value": {
+            "requester": null,
+            "empOids": [],
+            "includeNested": true
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "requests"
+        },
+        {
+          "type": "GET",
+          "path": "config.api.url"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "v3/rolecatalog/items"
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "requests"
+        },
+        {
+          "type": "GET",
+          "path": "config.api.payload"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET_MERGE",
+          "value": {
+            "empOids": "local:modelConfig.empOids",
+            "forMe": false
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "requests"
+        },
+        {
+          "type": "GET",
+          "path": "config"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET_MERGE",
+          "value": {
+            "readyToStart": false,
+            "behavior": [
+              {
+                "type": "BINARY",
+                "config": {
+                  "condition": {
+                    "property": "local:modelConfig.requester",
+                    "operator": "eq",
+                    "value": ["me"]
+                  },
+                  "config": {
+                    "readyToStart": true,
+                    "api": {
+                      "payload": {
+                        "forMe": true
+                      }
+                    }
+                  },
+                  "defaultConfig": {
+                    "readyToStart": true,
+                    "api": {
+                      "payload": {
+                        "forMe": false
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1934 @@
+{
+  "__revisionModded": "f5bb35ab",
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "formFields.createOrUpdate"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": [
+            {
+              "ref": "fullName-create",
+              "type": "INPUT",
+              "config": {
+                "componentAttrs": {
+                  "placeholder": "Обязательное поле",
+                  "clearable": true
+                },
+                "value": "record:fullName",
+                "fieldLabel": "Название",
+                "hideBottomSpace": true,
+                "rules": [
+                  {
+                    "type": "PRESENCE",
+                    "message": "Обязательное поле"
+                  }
+                ]
+              },
+              "behavior": [
+                {
+                  "type": "HIDDEN",
+                  "config": {
+                    "condition": {
+                      "property": "config:createMode",
+                      "operator": "eq",
+                      "value": ["false"]
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "ref": "fullName-edit",
+              "type": "INPUT",
+              "config": {
+                "componentAttrs": {
+                  "placeholder": "Обязательное поле",
+                  "clearable": true
+                },
+                "value": "record:fullName.orig",
+                "fieldLabel": "Название",
+                "hideBottomSpace": true,
+                "rules": [
+                  {
+                    "type": "PRESENCE",
+                    "message": "Обязательное поле"
+                  }
+                ]
+              },
+              "behavior": [
+                {
+                  "type": "HIDDEN",
+                  "config": {
+                    "condition": {
+                      "property": "config:createMode",
+                      "operator": "eq",
+                      "value": ["true"]
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "ref": "description-edit",
+              "type": "INPUT",
+              "config": {
+                "componentAttrs": {
+                  "placeholder": "",
+                  "clearable": true
+                },
+                "value": "record:description",
+                "fieldLabel": "Описание",
+                "hideBottomSpace": true
+              }
+            },
+            {
+              "ref": "parentOrgRef-edit",
+              "type": "OBJECT_SELECTOR",
+              "config": {
+                "fieldLabel": "Родительский информационный ресурс",
+                "value": "record:parentOrgRef",
+                "horizontalOverflow": false,
+                "singleSelection": true,
+                "componentAttrs": {
+                  "hideBottomSpace": true
+                },
+                "rules": [
+                  {
+                    "type": "PRESENCE",
+                    "message": "Обязательное поле",
+                    "condition": {
+                      "property": "false",
+                      "operator": "eq",
+                      "value": ["true"]
+                    }
+                  }
+                ],
+                "widget": {
+                  "ref": "parent-selected",
+                  "type": "CHIP",
+                  "config": {
+                    "fieldLabel": "{{{record:name|hierarchy}}}",
+                    "tooltip": "{{{record:name|separate}}}",
+                    "componentAttrs": {
+                      "removable": true
+                    },
+                    "role": "primary"
+                  }
+                }
+              },
+              "actions": [
+                {
+                  "name": "addItem",
+                  "type": "MODAL",
+                  "id": "selectRolesCatalog",
+                  "config": {
+                    "url": "config/modal/selectRolesCatalog",
+                    "initialConfig": {
+                      "title": "Выберите информационный ресурс из списка",
+                      "singleSelection": true
+                    },
+                    "modelConfig": {
+                      "selectedItems.items": "{{{record:parentOrgRef|arraify}}}",
+                      "onlyCatalogs": true
+                    }
+                  }
+                },
+                {
+                  "name": "modalSave",
+                  "type": "MODIFY",
+                  "config": {
+                    "commitData": false,
+                    "source": "raw:formData.data",
+                    "mods": [
+                      {
+                        "findTarget": [
+                          {
+                            "type": "GET",
+                            "path": "parentOrgRef"
+                          }
+                        ],
+                        "modify": [
+                          {
+                            "type": "SET",
+                            "value": "payload:modalSave.selectedItems.items.0"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "ref": "owner-edit",
+              "type": "OBJECT_SELECTOR",
+              "config": {
+                "fieldLabel": "Согласующий ресурса",
+                "value": "record:owner",
+                "singleSelection": false,
+                "componentAttrs": {
+                  "clearable": true,
+                  "hideBottomSpace": true
+                },
+                "rules": [
+                  {
+                    "type": "PRESENCE",
+                    "message": "Обязательное поле"
+                  }
+                ],
+                "widget": {
+                  "type": "CHIP",
+                  "ref": "owner-selected",
+                  "config": {
+                    "fieldLabel": "{{{record:familyName}}} {{{record:givenName}}} {{{record:additionalName}}}",
+                    "componentAttrs": {
+                      "removable": true
+                    },
+                    "role": "primary"
+                  }
+                }
+              },
+              "actions": [
+                {
+                  "name": "addItem",
+                  "type": "MODAL",
+                  "id": "selectUsers",
+                  "config": {
+                    "commitData": false,
+                    "source": "api",
+                    "modelConfig": {
+                      "selectedItems.items": "{{{record:owner|arraify}}}"
+                    },
+                    "url": "config/modal/selectUsers"
+                  }
+                },
+                {
+                  "name": "modalSave",
+                  "type": "MODIFY",
+                  "config": {
+                    "commitData": false,
+                    "source": "record:$item",
+                    "mods": [
+                      {
+                        "findTarget": [
+                          {
+                            "type": "GET",
+                            "path": "owner"
+                          }
+                        ],
+                        "modify": [
+                          {
+                            "type": "SET",
+                            "value": "payload:modalSave.selectedItems.items"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "ref": "source-edit",
+              "type": "SELECT",
+              "config": {
+                "rules": [
+                  {
+                    "type": "PRESENCE",
+                    "message": "Обязательное поле"
+                  }
+                ],
+                "fieldLabel": {
+                  "type": "TEMPLATE",
+                  "config": {
+                    "tpl": "Источник"
+                  }
+                },
+                "value": "record:source",
+                "options": "global:app.defaults.constants.inforesourceSource",
+                "hideBottomSpace": true,
+                "componentAttrs": {
+                  "clearable": true,
+                  "option-value": "id",
+                  "option-label": "name",
+                  "emit-value": true
+                }
+              }
+            },
+            {
+              "type": "SELECT",
+              "ref": "undersystem-edit",
+              "config": {
+                "options": {
+                  "type": "EXTRACT",
+                  "config": {
+                    "source": [
+                      {
+                        "id": "AD_underSystem1",
+                        "type": "Active Directory",
+                        "name": "AD_underSystem1"
+                      },
+                      {
+                        "id": "AD_underSystem2",
+                        "type": "Active Directory",
+                        "name": "AD_underSystem2"
+                      },
+                      {
+                        "id": "Exchange_underSystem1",
+                        "type": "Microsoft Exchange",
+                        "name": "Exchange_underSystem1"
+                      },
+                      {
+                        "id": "Exchange_underSystem2",
+                        "type": "Microsoft Exchange",
+                        "name": "Exchange_underSystem2"
+                      },
+                      {
+                        "id": "SFBusiness_underSystem",
+                        "type": "Skype for Business",
+                        "name": "SFBusiness_underSystem"
+                      }
+                    ],
+                    "mods": [
+                      {
+                        "findTarget": [
+                          {
+                            "type": "FILTER",
+                            "property": "type",
+                            "operator": "eq",
+                            "value": [
+                              "record:source"
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "value": "record:undersystem",
+                "fieldLabel": "Подсистема",
+                "componentAttrs": {
+                  "clearable": true,
+                  "option-value": "id",
+                  "option-label": "name",
+                  "emit-value": true
+                },
+                "rules": [
+                  {
+                    "type": "PRESENCE",
+                    "message": "Обязательное поле",
+                    "condition": {
+                      "property": "record:source",
+                      "operator": "eq",
+                      "inverse": true,
+                      "value": [
+                        "ESBAsyncSAP"
+                      ]
+                    }
+                  }
+                ]
+              },
+              "behavior": [
+                {
+                  "type": "HIDDEN",
+                  "config": {
+                    "condition": {
+                      "or": [
+                        {
+                          "property": "record:source",
+                          "operator": "eq",
+                          "value": [
+                            "ESBAsyncSAP"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+,
+            {
+              "ref": "systems-edit",
+              "type": "SELECT",
+              "config": {
+                "rules": [
+                  {
+                    "type": "PRESENCE",
+                    "message": "Обязательное поле"
+                  }
+                ],
+                "fieldLabel": {
+                  "type": "TEMPLATE",
+                  "config": {
+                    "tpl": "Система"
+                  }
+                },
+                "value": "record:systems",
+                "options": [
+                  { "id":  "Система 1", "name": "Система 1"},
+                  { "id":  "Система 2", "name": "Система 2"},
+                  { "id":  "Система 3", "name": "Система 3"}
+                ],
+                "hideBottomSpace": true,
+                "componentAttrs": {
+                  "clearable": true,
+                  "option-value": "id",
+                  "option-label": "name",
+                  "emit-value": true
+                }
+              }
+            },
+            {
+              "ref": "Confidentiality-edit",
+              "type": "SELECT",
+              "config": {
+                "rules": [
+                  {
+                    "type": "PRESENCE",
+                    "message": "Обязательное поле"
+                  }
+                ],
+                "fieldLabel": {
+                  "type": "TEMPLATE",
+                  "config": {
+                    "tpl": "Конфиденциальность"
+                  }
+                },
+                "value": "record:Confidentiality",
+                "options": [
+                  { "id":  "Корпоративная информация ограниченного распространения", "name": "Корпоративная информация ограниченного распространения"},
+                  { "id":  "Служебная информация", "name": "Служебная информация"},
+                  { "id":  "Иная информация", "name": "Иная информация"}
+                ],
+                "hideBottomSpace": true,
+                "componentAttrs": {
+                  "clearable": true,
+                  "option-value": "id",
+                  "option-label": "name",
+                  "emit-value": true
+                }
+              }
+            },
+            {
+              "ref": "Organization-edit",
+              "type": "OBJECT_SELECTOR",
+              "config": {
+                "fieldLabel": "Организация владелец информационного ресурса",
+                "value": "record:Organization",
+                "clearable": true,
+                "horizontalOverflow": false,
+                "singleSelection": false,
+                "componentAttrs": {
+                  "hideBottomSpace": true
+                },
+                "rules": [
+                  {
+                    "type": "PRESENCE",
+                    "message": "Обязательное поле"
+                  }
+                ],
+                "widget": {
+                  "type": "CHIP",
+                  "config": {
+                    "fieldLabel": "{{{record:name|hierarchy}}}",
+                    "tooltip": "{{{record:name|separate}}}",
+                    "componentAttrs": {
+                      "removable": true
+                    },
+                    "role": "primary"
+                  }
+                }
+              },
+              "actions": [
+                {
+                  "name": "addItem",
+                  "type": "MODAL",
+                  "id": "selectOrganization",
+                  "config": {
+                    "commitData": false,
+                    "source": "api",
+                    "modelConfig": {
+                      "selectedItems.items": "{{record:Organization|arraify}}"
+                    },
+                    "initialConfig": {
+                      "divisionsSelectable": true,
+                      "singleSelection": false,
+                      "needPositions": false,
+                      "title": "Выберите подразделение из списка"
+                    },
+                    "url": "config/modal/selectOrgStruct"
+                  }
+                },
+                {
+                  "name": "modalSave",
+                  "type": "MODIFY",
+                  "config": {
+                    "commitData": false,
+                    "source": "record:$item",
+                    "mods": [
+                      {
+                        "findTarget": [
+                          {
+                            "type": "GET",
+                            "path": "Organization",
+                            "ignoreUndefined": true
+                          }
+                        ],
+                        "modify": [
+                          {
+                            "type": "SET",
+                            "value": "payload:modalSave.selectedItems.items"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "ref": "TypeIR-edit",
+              "type": "SELECT",
+              "config": {
+                "rules": [
+                  {
+                    "type": "PRESENCE",
+                    "message": "Обязательное поле"
+                  }
+                ],
+                "fieldLabel": {
+                  "type": "TEMPLATE",
+                  "config": {
+                    "tpl": "Тип информационного ресурса"
+                  }
+                },
+                "value": "record:TypeIR",
+                "options": [
+                  { "id":  "Корпоративный", "name": "Корпоративный"},
+                  { "id":  "Локальный", "name": "Локальный"},
+                  { "id":  "VIP", "name": "VIP"}
+                ],
+                "hideBottomSpace": true,
+                "componentAttrs": {
+                  "clearable": true,
+                  "option-value": "id",
+                  "option-label": "name",
+                  "emit-value": true
+                }
+              }
+            },
+            {
+              "ref": "status-edit",
+              "type": "SELECT",
+              "config": {
+                "rules": [
+                  {
+                    "type": "PRESENCE",
+                    "message": "Обязательное поле"
+                  }
+                ],
+                "fieldLabel": {
+                  "type": "TEMPLATE",
+                  "config": {
+                    "tpl": "Статус информационного ресурса"
+                  }
+                },
+                "value": "record:status",
+                "options": "global:app.defaults.constants.IR_status",
+                "hideBottomSpace": true,
+                "componentAttrs": {
+                  "clearable": true,
+                  "option-value": "id",
+                  "option-label": "name",
+                  "emit-value": true
+                }
+              }
+            },
+            {
+              "ref": "ownerIR-edit",
+              "type": "OBJECT_SELECTOR",
+              "config": {
+                "fieldLabel": "Подразделение владельца информационного ресурса",
+                "value": "record:ownerIR",
+                "clearable": true,
+                "horizontalOverflow": false,
+                "singleSelection": false,
+                "componentAttrs": {
+                  "hideBottomSpace": true
+                },
+                "rules": [
+                  {
+                    "type": "PRESENCE",
+                    "message": "Обязательное поле"
+                  }
+                ],
+                "widget": {
+                  "type": "CHIP",
+                  "config": {
+                    "fieldLabel": "{{{record:name|hierarchy}}}",
+                    "tooltip": "{{{record:name|separate}}}",
+                    "componentAttrs": {
+                      "removable": true
+                    },
+                    "role": "primary"
+                  }
+                }
+              },
+              "actions": [
+                {
+                  "name": "addItem",
+                  "type": "MODAL",
+                  "id": "selectownerIR",
+                  "config": {
+                    "commitData": false,
+                    "source": "api",
+                    "modelConfig": {
+                      "selectedItems.items": "record:ownerIR"
+                    },
+                    "initialConfig": {
+                      "divisionsSelectable": true,
+                      "singleSelection": false,
+                      "needPositions": false,
+                      "title": "Выберите подразделение из списка"
+                    },
+                    "url": "config/modal/selectOrgStruct"
+                  }
+                },
+                {
+                  "name": "modalSave",
+                  "type": "MODIFY",
+                  "config": {
+                    "commitData": false,
+                    "source": "record:$item",
+                    "mods": [
+                      {
+                        "findTarget": [
+                          {
+                            "type": "GET",
+                            "path": "ownerIR",
+                            "ignoreUndefined": true
+                          }
+                        ],
+                        "modify": [
+                          {
+                            "type": "SET",
+                            "value": "payload:modalSave.selectedItems.items"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "ref": "Representative-edit",
+              "type": "OBJECT_SELECTOR",
+              "config": {
+                "fieldLabel": "Руководитель подразделения владельца информационного ресурса",
+                "value": "record:Representative",
+                "singleSelection": false,
+                "componentAttrs": {
+                  "clearable": true,
+                  "hideBottomSpace": true
+                },
+                "rules": [
+                  {
+                    "type": "PRESENCE",
+                    "message": "Обязательное поле"
+                  }
+                ],
+                "widget": {
+                  "type": "CHIP",
+                  "ref": "Representative-selected",
+                  "config": {
+                    "fieldLabel": "{{{record:familyName}}} {{{record:givenName}}} {{{record:additionalName}}}",
+                    "componentAttrs": {
+                      "removable": true
+                    },
+                    "role": "primary"
+                  }
+                }
+              },
+              "actions": [
+                {
+                  "name": "addItem",
+                  "type": "MODAL",
+                  "id": "selectUsers",
+                  "config": {
+                    "commitData": false,
+                    "source": "api",
+                    "modelConfig": {
+                      "selectedItems.items": "{{{record:Representative|arraify}}}"
+                    },
+                    "url": "config/modal/selectUsers"
+                  }
+                },
+                {
+                  "name": "modalSave",
+                  "type": "MODIFY",
+                  "config": {
+                    "commitData": false,
+                    "source": "record:$item",
+                    "mods": [
+                      {
+                        "findTarget": [
+                          {
+                            "type": "GET",
+                            "path": "Representative"
+                          }
+                        ],
+                        "modify": [
+                          {
+                            "type": "SET",
+                            "value": "payload:modalSave.selectedItems.items"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "ref": "ResponsibleRepresentative-edit",
+              "type": "OBJECT_SELECTOR",
+              "config": {
+                "fieldLabel": "Ответственный представитель ИР",
+                "value": "record:ResponsibleRepresentative",
+                "singleSelection": false,
+                "componentAttrs": {
+                  "clearable": true,
+                  "hideBottomSpace": true
+                },
+                "rules": [
+                  {
+                    "type": "PRESENCE",
+                    "message": "Обязательное поле"
+                  }
+                ],
+                "widget": {
+                  "type": "CHIP",
+                  "ref": "ResponsibleRepresentative-selected",
+                  "config": {
+                    "fieldLabel": "{{{record:familyName}}} {{{record:givenName}}} {{{record:additionalName}}}",
+                    "componentAttrs": {
+                      "removable": true
+                    },
+                    "role": "primary"
+                  }
+                }
+              },
+              "actions": [
+                {
+                  "name": "addItem",
+                  "type": "MODAL",
+                  "id": "selectUsers",
+                  "config": {
+                    "commitData": false,
+                    "source": "api",
+                    "modelConfig": {
+                      "selectedItems.items": "{{{record:ResponsibleRepresentative|arraify}}}"
+                    },
+                    "url": "config/modal/selectUsers"
+                  }
+                },
+                {
+                  "name": "modalSave",
+                  "type": "MODIFY",
+                  "config": {
+                    "commitData": false,
+                    "source": "record:$item",
+                    "mods": [
+                      {
+                        "findTarget": [
+                          {
+                            "type": "GET",
+                            "path": "ResponsibleRepresentative"
+                          }
+                        ],
+                        "modify": [
+                          {
+                            "type": "SET",
+                            "value": "payload:modalSave.selectedItems.items"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "ref": "adminIS-edit",
+              "type": "OBJECT_SELECTOR",
+              "config": {
+                "fieldLabel": "Администратор информационной системы",
+                "value": "record:adminIS",
+                "singleSelection": false,
+                "componentAttrs": {
+                  "clearable": true,
+                  "hideBottomSpace": true
+                },
+                "rules": [
+                  {
+                    "type": "PRESENCE",
+                    "message": "Обязательное поле"
+                  }
+                ],
+                "widget": {
+                  "type": "CHIP",
+                  "ref": "adminIS-selected",
+                  "config": {
+                    "fieldLabel": "{{{record:familyName}}} {{{record:givenName}}} {{{record:additionalName}}}",
+                    "componentAttrs": {
+                      "removable": true
+                    },
+                    "role": "primary"
+                  }
+                }
+              },
+              "actions": [
+                {
+                  "name": "addItem",
+                  "type": "MODAL",
+                  "id": "selectUsers",
+                  "config": {
+                    "commitData": false,
+                    "source": "api",
+                    "modelConfig": {
+                      "selectedItems.items": "{{{record:adminIS|arraify}}}"
+                    },
+                    "url": "config/modal/selectUsers"
+                  }
+                },
+                {
+                  "name": "modalSave",
+                  "type": "MODIFY",
+                  "config": {
+                    "commitData": false,
+                    "source": "record:$item",
+                    "mods": [
+                      {
+                        "findTarget": [
+                          {
+                            "type": "GET",
+                            "path": "adminIS"
+                          }
+                        ],
+                        "modify": [
+                          {
+                            "type": "SET",
+                            "value": "payload:modalSave.selectedItems.items"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "ref": "inforesourceExpert-edit",
+              "type": "OBJECT_SELECTOR",
+              "config": {
+                "fieldLabel": "Эксперты",
+                "value": "record:inforesourceExpert",
+                "singleSelection": false,
+                "componentAttrs": {
+                  "clearable": true,
+                  "hideBottomSpace": true
+                },
+                "widget": {
+                  "type": "CHIP",
+                  "ref": "inforesourceExpert-selected",
+                  "config": {
+                    "fieldLabel": "{{{record:familyName}}} {{{record:givenName}}} {{{record:additionalName}}}",
+                    "componentAttrs": {
+                      "removable": true
+                    },
+                    "role": "primary"
+                  }
+                }
+              },
+              "actions": [
+                {
+                  "name": "addItem",
+                  "type": "MODAL",
+                  "id": "selectUsers",
+                  "config": {
+                    "commitData": false,
+                    "source": "api",
+                    "modelConfig": {
+                      "selectedItems.items": "{{{record:inforesourceExpert|arraify}}}"
+                    },
+                    "url": "config/modal/selectUsers"
+                  }
+                },
+                {
+                  "name": "modalSave",
+                  "type": "MODIFY",
+                  "config": {
+                    "commitData": false,
+                    "source": "record:$item",
+                    "mods": [
+                      {
+                        "findTarget": [
+                          {
+                            "type": "GET",
+                            "path": "inforesourceExpert"
+                          }
+                        ],
+                        "modify": [
+                          {
+                            "type": "SET",
+                            "value": "payload:modalSave.selectedItems.items"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "formFields.read"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": [
+            {
+              "ref": "fullName",
+              "type": "DISPLAY_FIELD",
+              "config": {
+                "fieldLabel": "Наименование",
+                "text": "record:fullName.orig",
+                "editMode": "false",
+                "componentAttrs": {
+                  "style": "overflow-wrap: anywhere;"
+                }
+              }
+            },
+            {
+              "ref": "description",
+              "type": "DISPLAY_FIELD",
+              "config": {
+                "fieldLabel": "Описание",
+                "text": "record:description",
+                "editMode": "false",
+                "componentAttrs": {
+                  "style": "overflow-wrap: anywhere;"
+                }
+              }
+            },
+            {
+              "ref": "parentOrgRef",
+              "type": "DISPLAY_FIELD",
+              "config": {
+                "fieldLabel": "Родительский информационный ресурс",
+                "data": "record:parentOrgRef",
+                "editMode": "false"
+              },
+              "items": [
+                {
+                  "ref": "parent-name",
+                  "type": "TEXT",
+                  "config": {
+                    "fieldLabel": "{{{record:parentOrgRef.name|separate}}}"
+                  },
+                  "behavior": [
+                    {
+                      "type": "HIDDEN",
+                      "config": {
+                        "condition": {
+                          "or": [
+                            {
+                              "property": "record:parentOrgRef",
+                              "operator": "empty",
+                              "value": []
+                            },
+                            {
+                              "property": "single",
+                              "operator": "eq",
+                              "value": ["multi"]
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "TEXT",
+                  "config": {
+                    "fieldLabel": "-"
+                  },
+                  "behavior": [
+                    {
+                      "type": "HIDDEN",
+                      "config": {
+                        "condition": {
+                          "property": "record:parentOrgRef",
+                          "operator": "empty",
+                          "inverse": "true",
+                          "value": []
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "ref": "owner",
+              "type": "DISPLAY_FIELD",
+              "config": {
+                "fieldLabel": "Согласующий ресурса",
+                "data": "record:owner",
+                "editMode": "false"
+              },
+              "items": [
+                {
+                  "type": "ITERATOR",
+                  "config": {
+                    "componentAttrs": {
+                      "class": "flex-column"
+                    }
+                  },
+                  "modelBindings": {
+                    "data": "record:owner"
+                  },
+                  "items": [
+                    {
+                      "type": "LAYOUT_ROW",
+                      "config": {
+                        "componentAttrs": {
+                          "componentClass": "flex items-center gap-sm"
+                        }
+                      },
+                      "items": [
+                        {
+                          "ref": "owner-avatar",
+                          "type": "AVATAR",
+                          "config": {
+                            "avatarImageUrl": "v2/user-photo/{{record:id}}",
+                            "avatarIcon": {
+                              "type": "SVG",
+                              "config": {
+                                "viewBox": "0 0 16 16",
+                                "width": "16",
+                                "height": "16",
+                                "items": [
+                                  {
+                                    "type": "CIRCLE",
+                                    "config": {
+                                      "x": 8,
+                                      "y": 8,
+                                      "value": 8,
+                                      "fill": {
+                                        "type": "VARIABLE",
+                                        "config": {
+                                          "value": "--q-user-icon-bg-color"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "PATH",
+                                    "config": {
+                                      "value": "M9.89539 6.7556C9.89539 7.83563 9.0468 8.71116 8.00001 8.71116C6.95322 8.71116 6.10463 7.83563 6.10463 6.7556C6.10463 5.67558 6.95322 4.80005 8.00001 4.80005C9.0468 4.80005 9.89539 5.67558 9.89539 6.7556Z",
+                                      "fill": {
+                                        "type": "VARIABLE",
+                                        "config": {
+                                          "value": "--q-user-icon-fill-color"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "PATH",
+                                    "config": {
+                                      "value": "M10.24 10.1334C10.24 10.7225 9.23713 11.2 8.00001 11.2C6.76289 11.2 5.76001 10.7225 5.76001 10.1334C5.76001 9.54428 6.76289 9.06672 8.00001 9.06672C9.23713 9.06672 10.24 9.54428 10.24 10.1334Z",
+                                      "fill": {
+                                        "type": "VARIABLE",
+                                        "config": {
+                                          "value": "--q-user-icon-fill-color"
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "ref": "owner-name",
+                          "type": "LINK",
+                          "config": {
+                            "fieldLabel": "{{{record:name}}}",
+                            "to": "/users/{{record:id}}"
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "behavior": [
+                    {
+                      "type": "HIDDEN",
+                      "config": {
+                        "condition": {
+                          "property": "record:owner",
+                          "operator": "empty",
+                          "value": []
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "ref": "owner-empty",
+                  "type": "TEXT",
+                  "config": {
+                    "fieldLabel": "-"
+                  },
+                  "behavior": [
+                    {
+                      "type": "SHOW",
+                      "config": {
+                        "condition": {
+                          "property": "record:owner",
+                          "operator": "empty",
+                          "value": []
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "ref": "source",
+              "type": "DISPLAY_FIELD",
+              "config": {
+                "fieldLabel": "Источник",
+                "text": "record:source",
+                "editMode": "false",
+                "componentAttrs": {
+                  "style": "overflow-wrap: anywhere;"
+                }
+              }
+            },
+            {
+              "ref": "undersystem",
+              "type": "DISPLAY_FIELD",
+              "config": {
+                "fieldLabel": "Подсистема",
+                "text": {
+                  "type": "TEMPLATE",
+                  "config": {
+                    "class": "text-wrap",
+                    "tpl": "record:undersystem",
+                    "context": "select-options-undersystem"
+                  }
+                }
+              },
+              "behavior": [
+                {
+                  "type": "SHOW",
+                  "config": {
+                    "condition": {
+                      "property": "true",
+                      "debug": true,
+                      "value": ["under"]
+                    }
+                  }
+                }
+              ]
+
+            },
+            {
+              "ref": "systems",
+              "type": "DISPLAY_FIELD",
+              "config": {
+                "fieldLabel": "Система",
+                "text": "record:systems",
+                "componentAttrs": {
+                  "style": "overflow-wrap: anywhere;"
+                }
+              },
+              "behavior": [
+                {
+                  "type": "SHOW",
+                  "config": {
+                    "condition": {
+                      "property": "true",
+                      "debug": true,
+                      "value": ["system"]
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "ref": "Confidentiality",
+              "type": "DISPLAY_FIELD",
+              "config": {
+                "fieldLabel": "Конфиденциальность",
+                "text": "record:Confidentiality",
+                "editMode": "false",
+                "componentAttrs": {
+                  "style": "overflow-wrap: anywhere;"
+                }
+              }
+            },
+            {
+              "ref": "Organization",
+              "type": "DISPLAY_FIELD",
+              "config": {
+                "fieldLabel": "Организация владелец информационного ресурса",
+                "data": "record:Organization",
+                "editMode": false
+              },
+              "items": [
+                {
+                  "type": "ITERATOR",
+                  "config": {
+                    "class": "flex-column"
+                  },
+                  "modelBindings": {
+                    "data": "record:Organization"
+                  },
+                  "items": [
+                    {
+                      "type": "LAYOUT_ROW",
+                      "config": {
+                        "class": "flex items-center gap-sm"
+                      },
+                      "items": [
+                        {
+                          "type": "TEXT",
+                          "config": {
+                            "fieldLabel": "{{{record:name|separate}}}"
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "behavior": [
+                    {
+                      "type": "HIDDEN",
+                      "config": {
+                        "condition": {
+                          "property": "record:Organization",
+                          "operator": "empty",
+                          "value": []
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "TEXT",
+                  "config": {
+                    "fieldLabel": "-"
+                  },
+                  "behavior": [
+                    {
+                      "type": "HIDDEN",
+                      "config": {
+                        "condition": {
+                          "property": "record:Organization",
+                          "operator": "empty",
+                          "inverse": "true",
+                          "value": []
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "ref": "TypeIR",
+              "type": "DISPLAY_FIELD",
+              "config": {
+                "fieldLabel": "Тип информационного ресурса",
+                "text": "record:TypeIR",
+                "editMode": "false",
+                "componentAttrs": {
+                  "style": "overflow-wrap: anywhere;"
+                }
+              }
+            },
+            {
+              "ref": "status",
+              "type": "DISPLAY_FIELD",
+              "config": {
+                "fieldLabel": "Статус информационного ресурса",
+                "text": {
+                  "type": "TEMPLATE",
+                  "config": {
+                    "tpl": "record:status",
+                    "context": "select-options-status"
+                  }
+                },
+                "editMode": "false",
+                "componentAttrs": {
+                  "style": "overflow-wrap: anywhere;"
+                }
+              }
+            },
+            {
+              "ref": "ownerIR",
+              "type": "DISPLAY_FIELD",
+              "config": {
+                "fieldLabel": "Подразделение владельца информационного ресурса",
+                "data": "record:ownerIR",
+                "editMode": "false"
+              },
+              "items": [
+                {
+                  "type": "ITERATOR",
+                  "config": {
+                    "class": "flex-column"
+                  },
+                  "modelBindings": {
+                    "data": "record:ownerIR"
+                  },
+                  "items": [
+                    {
+                      "type": "LAYOUT_ROW",
+                      "config": {
+                        "class": "flex items-center gap-sm"
+                      },
+                      "items": [
+                        {
+                          "type": "TEXT",
+                          "config": {
+                            "fieldLabel": "{{{record:name|separate}}}"
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "behavior": [
+                    {
+                      "type": "HIDDEN",
+                      "config": {
+                        "condition": {
+                          "property": "record:ownerIR",
+                          "operator": "empty",
+                          "value": []
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "TEXT",
+                  "config": {
+                    "fieldLabel": "-"
+                  },
+                  "behavior": [
+                    {
+                      "type": "HIDDEN",
+                      "config": {
+                        "condition": {
+                          "property": "record:ownerIR",
+                          "operator": "empty",
+                          "inverse": "true",
+                          "value": []
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+
+            {
+              "ref": "Representative",
+              "type": "DISPLAY_FIELD",
+              "behavior": [
+                {
+                  "type": "SHOW",
+                  "config": {
+                    "condition": {
+                      "property": "true",
+                      "operator": "eq",
+                      "value": ["true"]
+                    }
+                  }
+                }
+              ],
+              "config": {
+                "fieldLabel": "Руководитель подразделения владельца информационного ресурса",
+                "data": "record:Representative",
+                "editMode": "false"
+              },
+              "items": [
+                {
+                  "type": "ITERATOR",
+                  "config": {
+                    "componentAttrs": {
+                      "class": "flex-column"
+                    }
+                  },
+                  "modelBindings": {
+                    "data": "record:Representative"
+                  },
+                  "items": [
+                    {
+                      "type": "LAYOUT_ROW",
+                      "config": {
+                        "componentAttrs": {
+                          "componentClass": "flex items-center gap-sm"
+                        }
+                      },
+                      "items": [
+                        {
+                          "ref": "Representative-avatar",
+                          "type": "AVATAR",
+                          "config": {
+                            "avatarImageUrl": "v2/user-photo/{{record:id}}",
+                            "avatarIcon": {
+                              "type": "SVG",
+                              "config": {
+                                "viewBox": "0 0 16 16",
+                                "width": "16",
+                                "height": "16",
+                                "items": [
+                                  {
+                                    "type": "CIRCLE",
+                                    "config": {
+                                      "x": 8,
+                                      "y": 8,
+                                      "value": 8,
+                                      "fill": {
+                                        "type": "VARIABLE",
+                                        "config": {
+                                          "value": "--q-user-icon-bg-color"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "PATH",
+                                    "config": {
+                                      "value": "M9.89539 6.7556C9.89539 7.83563 9.0468 8.71116 8.00001 8.71116C6.95322 8.71116 6.10463 7.83563 6.10463 6.7556C6.10463 5.67558 6.95322 4.80005 8.00001 4.80005C9.0468 4.80005 9.89539 5.67558 9.89539 6.7556Z",
+                                      "fill": {
+                                        "type": "VARIABLE",
+                                        "config": {
+                                          "value": "--q-user-icon-fill-color"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "PATH",
+                                    "config": {
+                                      "value": "M10.24 10.1334C10.24 10.7225 9.23713 11.2 8.00001 11.2C6.76289 11.2 5.76001 10.7225 5.76001 10.1334C5.76001 9.54428 6.76289 9.06672 8.00001 9.06672C9.23713 9.06672 10.24 9.54428 10.24 10.1334Z",
+                                      "fill": {
+                                        "type": "VARIABLE",
+                                        "config": {
+                                          "value": "--q-user-icon-fill-color"
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "ref": "Representative-name",
+                          "type": "LINK",
+                          "config": {
+                            "fieldLabel": "{{{record:name}}}",
+                            "to": "/users/{{record:id}}"
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "behavior": [
+                    {
+                      "type": "HIDDEN",
+                      "config": {
+                        "condition": {
+                          "property": "record:Representative",
+                          "operator": "empty",
+                          "value": []
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "ref": "Representative-empty",
+                  "type": "TEXT",
+                  "config": {
+                    "fieldLabel": "-"
+                  },
+                  "behavior": [
+                    {
+                      "type": "SHOW",
+                      "config": {
+                        "condition": {
+                          "property": "record:Representative",
+                          "operator": "empty",
+                          "value": []
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+
+            {
+              "ref": "ResponsibleRepresentative",
+              "type": "DISPLAY_FIELD",
+              "behavior": [
+                {
+                  "type": "SHOW",
+                  "config": {
+                    "condition": {
+                      "property": "true",
+                      "operator": "eq",
+                      "value": ["true"]
+                    }
+                  }
+                }
+              ],
+              "config": {
+                "fieldLabel": "Ответственный представитель ИР",
+                "data": "record:ResponsibleRepresentative",
+                "editMode": "false"
+              },
+              "items": [
+                {
+                  "type": "ITERATOR",
+                  "config": {
+                    "componentAttrs": {
+                      "class": "flex-column"
+                    }
+                  },
+                  "modelBindings": {
+                    "data": "record:ResponsibleRepresentative"
+                  },
+                  "items": [
+                    {
+                      "type": "LAYOUT_ROW",
+                      "config": {
+                        "componentAttrs": {
+                          "componentClass": "flex items-center gap-sm"
+                        }
+                      },
+                      "items": [
+                        {
+                          "ref": "ResponsibleRepresentative-avatar",
+                          "type": "AVATAR",
+                          "config": {
+                            "avatarImageUrl": "v2/user-photo/{{record:id}}",
+                            "avatarIcon": {
+                              "type": "SVG",
+                              "config": {
+                                "viewBox": "0 0 16 16",
+                                "width": "16",
+                                "height": "16",
+                                "items": [
+                                  {
+                                    "type": "CIRCLE",
+                                    "config": {
+                                      "x": 8,
+                                      "y": 8,
+                                      "value": 8,
+                                      "fill": {
+                                        "type": "VARIABLE",
+                                        "config": {
+                                          "value": "--q-user-icon-bg-color"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "PATH",
+                                    "config": {
+                                      "value": "M9.89539 6.7556C9.89539 7.83563 9.0468 8.71116 8.00001 8.71116C6.95322 8.71116 6.10463 7.83563 6.10463 6.7556C6.10463 5.67558 6.95322 4.80005 8.00001 4.80005C9.0468 4.80005 9.89539 5.67558 9.89539 6.7556Z",
+                                      "fill": {
+                                        "type": "VARIABLE",
+                                        "config": {
+                                          "value": "--q-user-icon-fill-color"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "PATH",
+                                    "config": {
+                                      "value": "M10.24 10.1334C10.24 10.7225 9.23713 11.2 8.00001 11.2C6.76289 11.2 5.76001 10.7225 5.76001 10.1334C5.76001 9.54428 6.76289 9.06672 8.00001 9.06672C9.23713 9.06672 10.24 9.54428 10.24 10.1334Z",
+                                      "fill": {
+                                        "type": "VARIABLE",
+                                        "config": {
+                                          "value": "--q-user-icon-fill-color"
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "ref": "ResponsibleRepresentative-name",
+                          "type": "LINK",
+                          "config": {
+                            "fieldLabel": "{{{record:name}}}",
+                            "to": "/users/{{record:id}}"
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "behavior": [
+                    {
+                      "type": "HIDDEN",
+                      "config": {
+                        "condition": {
+                          "property": "record:ResponsibleRepresentative",
+                          "operator": "empty",
+                          "value": []
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "ref": "ResponsibleRepresentative-empty",
+                  "type": "TEXT",
+                  "config": {
+                    "fieldLabel": "-"
+                  },
+                  "behavior": [
+                    {
+                      "type": "SHOW",
+                      "config": {
+                        "condition": {
+                          "property": "record:ResponsibleRepresentative",
+                          "operator": "empty",
+                          "value": []
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+
+            {
+              "ref": "adminIS",
+              "type": "DISPLAY_FIELD",
+              "behavior": [
+                {
+                  "type": "SHOW",
+                  "config": {
+                    "condition": {
+                      "property": "true",
+                      "operator": "eq",
+                      "value": ["true"]
+                    }
+                  }
+                }
+              ],
+              "config": {
+                "fieldLabel": "Администратор информационной системы",
+                "data": "record:adminIS",
+                "editMode": "false"
+              },
+              "items": [
+                {
+                  "type": "ITERATOR",
+                  "config": {
+                    "componentAttrs": {
+                      "class": "flex-column"
+                    }
+                  },
+                  "modelBindings": {
+                    "data": "record:adminIS"
+                  },
+                  "items": [
+                    {
+                      "type": "LAYOUT_ROW",
+                      "config": {
+                        "componentAttrs": {
+                          "componentClass": "flex items-center gap-sm"
+                        }
+                      },
+                      "items": [
+                        {
+                          "ref": "adminIS-avatar",
+                          "type": "AVATAR",
+                          "config": {
+                            "avatarImageUrl": "v2/user-photo/{{record:id}}",
+                            "avatarIcon": {
+                              "type": "SVG",
+                              "config": {
+                                "viewBox": "0 0 16 16",
+                                "width": "16",
+                                "height": "16",
+                                "items": [
+                                  {
+                                    "type": "CIRCLE",
+                                    "config": {
+                                      "x": 8,
+                                      "y": 8,
+                                      "value": 8,
+                                      "fill": {
+                                        "type": "VARIABLE",
+                                        "config": {
+                                          "value": "--q-user-icon-bg-color"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "PATH",
+                                    "config": {
+                                      "value": "M9.89539 6.7556C9.89539 7.83563 9.0468 8.71116 8.00001 8.71116C6.95322 8.71116 6.10463 7.83563 6.10463 6.7556C6.10463 5.67558 6.95322 4.80005 8.00001 4.80005C9.0468 4.80005 9.89539 5.67558 9.89539 6.7556Z",
+                                      "fill": {
+                                        "type": "VARIABLE",
+                                        "config": {
+                                          "value": "--q-user-icon-fill-color"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "PATH",
+                                    "config": {
+                                      "value": "M10.24 10.1334C10.24 10.7225 9.23713 11.2 8.00001 11.2C6.76289 11.2 5.76001 10.7225 5.76001 10.1334C5.76001 9.54428 6.76289 9.06672 8.00001 9.06672C9.23713 9.06672 10.24 9.54428 10.24 10.1334Z",
+                                      "fill": {
+                                        "type": "VARIABLE",
+                                        "config": {
+                                          "value": "--q-user-icon-fill-color"
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "ref": "adminIS-name",
+                          "type": "LINK",
+                          "config": {
+                            "fieldLabel": "{{{record:name}}}",
+                            "to": "/users/{{record:id}}"
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "behavior": [
+                    {
+                      "type": "HIDDEN",
+                      "config": {
+                        "condition": {
+                          "property": "record:adminIS",
+                          "operator": "empty",
+                          "value": []
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "ref": "adminIS-empty",
+                  "type": "TEXT",
+                  "config": {
+                    "fieldLabel": "-"
+                  },
+                  "behavior": [
+                    {
+                      "type": "SHOW",
+                      "config": {
+                        "condition": {
+                          "property": "record:adminIS",
+                          "operator": "empty",
+                          "value": []
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+
+            {
+              "ref": "inforesourceExpert",
+              "type": "DISPLAY_FIELD",
+              "behavior": [
+                {
+                  "type": "SHOW",
+                  "config": {
+                    "condition": {
+                      "property": "true",
+                      "operator": "eq",
+                      "value": ["true"]
+                    }
+                  }
+                }
+              ],
+              "config": {
+                "fieldLabel": "Эксперты",
+                "data": "record:inforesourceExpert",
+                "editMode": "false"
+              },
+              "items": [
+                {
+                  "type": "ITERATOR",
+                  "config": {
+                    "componentAttrs": {
+                      "class": "flex-column"
+                    }
+                  },
+                  "modelBindings": {
+                    "data": "record:inforesourceExpert"
+                  },
+                  "items": [
+                    {
+                      "type": "LAYOUT_ROW",
+                      "config": {
+                        "componentAttrs": {
+                          "componentClass": "flex items-center gap-sm"
+                        }
+                      },
+                      "items": [
+                        {
+                          "ref": "inforesourceExpert-avatar",
+                          "type": "AVATAR",
+                          "config": {
+                            "avatarImageUrl": "v2/user-photo/{{record:id}}",
+                            "avatarIcon": {
+                              "type": "SVG",
+                              "config": {
+                                "viewBox": "0 0 16 16",
+                                "width": "16",
+                                "height": "16",
+                                "items": [
+                                  {
+                                    "type": "CIRCLE",
+                                    "config": {
+                                      "x": 8,
+                                      "y": 8,
+                                      "value": 8,
+                                      "fill": {
+                                        "type": "VARIABLE",
+                                        "config": {
+                                          "value": "--q-user-icon-bg-color"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "PATH",
+                                    "config": {
+                                      "value": "M9.89539 6.7556C9.89539 7.83563 9.0468 8.71116 8.00001 8.71116C6.95322 8.71116 6.10463 7.83563 6.10463 6.7556C6.10463 5.67558 6.95322 4.80005 8.00001 4.80005C9.0468 4.80005 9.89539 5.67558 9.89539 6.7556Z",
+                                      "fill": {
+                                        "type": "VARIABLE",
+                                        "config": {
+                                          "value": "--q-user-icon-fill-color"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "PATH",
+                                    "config": {
+                                      "value": "M10.24 10.1334C10.24 10.7225 9.23713 11.2 8.00001 11.2C6.76289 11.2 5.76001 10.7225 5.76001 10.1334C5.76001 9.54428 6.76289 9.06672 8.00001 9.06672C9.23713 9.06672 10.24 9.54428 10.24 10.1334Z",
+                                      "fill": {
+                                        "type": "VARIABLE",
+                                        "config": {
+                                          "value": "--q-user-icon-fill-color"
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "ref": "inforesourceExpert-name",
+                          "type": "LINK",
+                          "config": {
+                            "fieldLabel": "{{{record:name}}}",
+                            "to": "/users/{{record:id}}"
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "behavior": [
+                    {
+                      "type": "HIDDEN",
+                      "config": {
+                        "condition": {
+                          "property": "record:inforesourceExpert",
+                          "operator": "empty",
+                          "value": []
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "ref": "inforesourceExpert-empty",
+                  "type": "TEXT",
+                  "config": {
+                    "fieldLabel": "-"
+                  },
+                  "behavior": [
+                    {
+                      "type": "SHOW",
+                      "config": {
+                        "condition": {
+                          "property": "record:inforesourceExpert",
+                          "operator": "empty",
+                          "value": []
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

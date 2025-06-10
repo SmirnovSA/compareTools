@@ -1,0 +1,367 @@
+{
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "requestParams"
+        },
+        {
+          "type": "GET",
+          "path": "config.data"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET_MERGE",
+          "value": {
+            "advancedFilter": {
+              "orgs": []
+            },
+            "sort": [
+              {
+                "direction": "ASC",
+                "property": "fullName"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "users"
+        },
+        {
+          "type": "GET",
+          "path": "accumulate.watchParams"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": ["local:requestParams.sort", "local:requestParams.search", "local:requestParams.advancedFilter"]
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "users"
+        },
+        {
+          "type": "GET",
+          "path": "config.api"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET_MERGE",
+          "value": {
+            "url": "rolecatalog/{{route:id}}/lukoil/users",
+            "payload": {
+              "sort": "local:requestParams.sort",
+              "filter": [
+                {
+                  "property": "orgOid",
+                  "operator": "in",
+                  "value": "{{{local:requestParams.advancedFilter.orgs|take:id}}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "items"
+        },
+        {
+          "type": "FIND",
+          "property": "ref",
+          "operator": "eq",
+          "value": "roles-catalog-users-list"
+        },
+        {
+          "type": "GET",
+          "path": "modelBindings"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET_MERGE",
+          "value": {
+            "sort": "local:requestParams.sort",
+            "modelBindings": {
+              "watchParams": ["local:requestParams.advancedFilter"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "items"
+        },
+        {
+          "type": "FIND",
+          "property": "ref",
+          "operator": "eq",
+          "value": "roles-catalog-users-list"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        },
+        {
+          "type": "FIND",
+          "property": "ref",
+          "operator": "eq",
+          "value": "displayName"
+        },
+        {
+          "type": "GET",
+          "path": "config"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET_MERGE",
+          "value": {
+            "sortable": true,
+            "sortProperty": "fullName"
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "items"
+        },
+        {
+          "type": "FIND",
+          "property": "ref",
+          "operator": "eq",
+          "value": "roles-catalog-users-list"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 1,
+          "deleteCount": 1,
+          "value": [
+            {
+              "type": "LIST_TH",
+              "ref": "parentOrg",
+              "config": {
+                "fieldLabel": "Организация",
+                "sortable": true,
+                "sortProperty": "parentOrg",
+                "componentAttrs": {
+                  "grow": 1,
+                  "headerClass": "col"
+                }
+              }
+            },
+            {
+              "type": "LIST_TH",
+              "ref": "childOrg",
+              "config": {
+                "fieldLabel": "Подразделение",
+                "sortable": true,
+                "sortProperty": "childOrg",
+                "componentAttrs": {
+                  "grow": 1,
+                  "headerClass": "col"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "items"
+        },
+        {
+          "type": "FIND",
+          "property": "ref",
+          "operator": "eq",
+          "value": "roles-catalog-users-list"
+        },
+        {
+          "type": "GET",
+          "path": "config.widget.items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 2,
+          "deleteCount": 1,
+          "value": {
+            "ref": "roles-catalog-users-list-cell-parent-org",
+            "type": "CELL_TEXT",
+            "config": {
+              "fieldLabel": "{{{record:parentOrg.name}}}",
+              "componentAttrs": {
+                "grow": 1
+              }
+            }
+          }
+        },
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 3,
+          "value": {
+            "ref": "roles-catalog-users-list-cell-child-org",
+            "type": "CELL_TEXT",
+            "config": {
+              "fieldLabel": "{{{record:childOrg.name}}}",
+              "componentAttrs": {
+                "grow": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "items.0.items"
+        },
+        {
+          "type": "FIND",
+          "property": "ref",
+          "operator": "eq",
+          "value": "users-search"
+        },
+        {
+          "type": "GET",
+          "path": "config.advancedFilter"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": true
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "items.0.items"
+        },
+        {
+          "type": "FIND",
+          "property": "ref",
+          "operator": "eq",
+          "value": "users-search"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET_MERGE",
+          "value": {
+            "modelBindings": {
+              "selectedFilters": "local:requestParams.advancedFilter"
+            },
+            "actions": [
+              {
+                "name": "showAdvancedFilter",
+                "type": "MODAL",
+                "config": {
+                  "url": "config/rolesCatalogs/card/modal/usersAdvancedFilter",
+                  "modelConfig": "raw:requestParams.advancedFilter"
+                }
+              },
+              {
+                "type": "MODIFY",
+                "name": "modalSave",
+                "config": {
+                  "commitData": true,
+                  "source": "local:requestParams",
+                  "mods": [
+                    {
+                      "findTarget": [
+                        {
+                          "type": "GET",
+                          "path": "advancedFilter"
+                        }
+                      ],
+                      "modify": [
+                        {
+                          "type": "SET",
+                          "value": "payload:modalSave"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "behavior": null
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "warn"
+        },
+        {
+          "type": "GET",
+          "path": "config.overrideRecord.pageName.config.tpl"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "Карточка информационного ресурса"
+        }
+      ]
+    }
+  ]
+}

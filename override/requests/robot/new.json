@@ -1,0 +1,219 @@
+{
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "roles"
+        },
+        {
+          "type": "GET",
+          "path": "config.api.url"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "v3/catalog/tree/roles"
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "roles_list"
+        },
+        {
+          "type": "GET",
+          "path": "config.widget.items.1.items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 0,
+          "deleteCount": 0,
+          "value": {
+            "ref": "role-connector-description",
+            "type": "TEXT",
+            "config": {
+              "fieldLabel": "{{record:connectorDescription}}",
+              "tooltip": "{{record:connectorDescription}}",
+              "componentAttrs": {
+                "lines": 6,
+                "class": "text-wrap"
+              }
+            },
+            "behavior": [
+              {
+                "type": "HIDDEN",
+                "config": {
+                  "condition": {
+                    "property": "record:connectorDescription",
+                    "operator": "eq",
+                    "value": [""]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "values_CATALOG_ROLE"
+        },
+        {
+          "type": "GET",
+          "path": "actions"
+        },
+        {
+          "type": "FIND",
+          "property": "name",
+          "operator": "eq",
+          "value": "addItem"
+        },
+        {
+          "type": "GET",
+          "path": "config.modelConfig"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET_MERGE",
+          "value": {
+            "showIncludeNested": true,
+            "includeNested": "local:requestParams.includeNested"
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "values_CATALOG_ROLE"
+        },
+        {
+          "type": "GET",
+          "path": "actions"
+        },
+        {
+          "type": "FIND",
+          "property": "name",
+          "operator": "eq",
+          "value": "modalSave"
+        },
+        {
+          "type": "GET",
+          "path": "config.mods"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "findTarget": [
+              {
+                "type": "GET",
+                "path": "includeNested"
+              }
+            ],
+            "modify": [
+              {
+                "type": "SET",
+                "value": "payload:modalSave.includeNested"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "requestParams"
+        },
+        {
+          "type": "GET",
+          "path": "config.data"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET_MERGE",
+          "value": {
+            "includeNested": false
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "roles"
+        },
+        {
+          "type": "GET",
+          "path": "accumulate.watchParams"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": "local:requestParams.includeNested"
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "roles"
+        },
+        {
+          "type": "GET",
+          "path": "config.api.payload"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET_MERGE",
+          "value": {
+            "includeSubtree": "local:requestParams.includeNested"
+          }
+        }
+      ]
+    }
+  ]
+}

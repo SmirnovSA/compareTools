@@ -1,0 +1,65 @@
+{
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "modelConfig"
+        },
+        {
+          "type": "GET",
+          "path": "config.data.employmentType"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": {}
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "items.1.items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 3,
+          "deleteCount": 1,
+          "value": {
+            "ref": "employmentType",
+            "type": "SELECT",
+            "config": {
+              "value": "local:modelConfig.employmentType",
+              "translate": {
+                "enable": true
+              },
+              "hideBottomSpace": true,
+              "componentAttrs": {
+                "style": "width:100%;",
+                "clearable": true,
+                "option-value": "id",
+                "option-label": "name"
+              },
+              "options": [
+                { "id": "externalEmployee", "name": "Подрядчик" },
+                { "id": "internalEmployee", "name": "ТД: основное место работы" }
+              ],
+              "fieldLabel": "Тип пользователя"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

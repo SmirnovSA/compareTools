@@ -1,0 +1,343 @@
+{
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "submitData"
+        },
+        {
+          "type": "GET",
+          "path": "config.data.attributes"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": {
+            "resource": null,
+            "intent": null,
+            "intentGRC": null,
+            "password": null,
+            "enabled": true,
+            "items": []
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "items.1.behavior"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "type": "BINARY",
+            "config": {
+              "condition": {
+                "property": "true",
+                "operator": "eq",
+                "value": ["true"]
+              },
+              "config": {
+                "hiddenSteps": ["roles"]
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "items.1.items.8.overrideRecord"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": {
+            "activeStep": "local:stepperState.activeStep",
+            "stepName": "comment",
+            "isValid": null,
+            "label": {
+              "type": "TEMPLATE",
+              "config": {
+                "tpl": "Комментарий"
+              }
+            },
+            "number": 3
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "params-form"
+        },
+        {
+          "type": "GET",
+          "path": "config.url"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "/config/technicalAccounts/steps/paramsGRC"
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "content-params"
+        },
+        {
+          "type": "GET",
+          "path": "items.0.actions"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "name": "bubbleEvent:intentGRCChange",
+            "type": "MODIFY",
+            "config": {
+              "source": "local:submitData",
+              "commitData": true,
+              "mods": [
+                {
+                  "findTarget": [
+                    {
+                      "type": "GET",
+                      "ignoreUndefined": true,
+                      "path": "attributes.intentGRC"
+                    }
+                  ],
+                  "modify": [
+                    {
+                      "type": "SET",
+                      "value": "payload:intentGRC"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "stepper-button-submit"
+        },
+        {
+          "type": "GET",
+          "path": "actions"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": [
+            {
+              "name": "click",
+              "type": "EVENT",
+              "config": {
+                "value": "toCreateRobot"
+              }
+            },
+            {
+              "name": "toCreateRobot",
+              "type": "API",
+              "id": "createRobot",
+              "config": {
+                "method": "POST",
+                "url": "v2/prism-object-templates/robot/create",
+                "payload": {
+                  "fields": [
+                    {
+                      "itemPath": "description",
+                      "format": "string",
+                      "name": "description",
+                      "multiple": false,
+                      "readonly": false,
+                      "value": "{{raw:submitData.data.description|empty:null}}"
+                    },
+                    {
+                      "itemPath": "ownerRef",
+                      "name": "ownerRef",
+                      "format": "userReference",
+                      "multiple": true,
+                      "readonly": false,
+                      "value": "{{raw:submitData.data.owner|take:id}}"
+                    },
+                    {
+                      "itemPath": "parentOrgRef",
+                      "name": "parentOrgRef",
+                      "format": "orgPickerReference",
+                      "multiple": false,
+                      "readonly": false,
+                      "value": "{{raw:submitData.data.parentOrgRef.id|empty:null}}"
+                    },
+                    {
+                      "itemPath": "resourceAttributes",
+                      "name": "resourceAttributes",
+                      "format": "resourceAttributes",
+                      "multiple": false,
+                      "readonly": false,
+                      "value": {
+                        "resource": "raw:submitData.attributes.resource.0.id",
+                        "attributes": "raw:submitData.attributes.items",
+                        "password": "{{raw:submitData.attributes.password|b64encode}}",
+                        "enabled": "{{raw:submitData.attributes.enabled|boolean}}",
+                        "intent": "raw:submitData.attributes.intent"
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "requestSuccess:createRobot",
+              "type": "API",
+              "id": "createRobotFields",
+              "condition": {
+                "property": "raw:submitData.attributes.resource.0.name",
+                "operator": "eq",
+                "value": "ESBAsyncGRC"
+              },
+              "config": {
+                "method": "POST",
+                "url": "v2/robots/robot/create",
+                "payload": {
+                  "data" : {},
+                  "password" : "{{raw:submitData.attributes.password|b64encode}}",
+                  "enabled" : "raw:submitData.attributes.enabled",
+                  "resource" : "raw:submitData.attributes.resource.0.id",
+                  "linkRef" : "",
+                  "intent" : "",
+                  "roles" : [],
+                  "intentGRC" : "raw:submitData.attributes.intentGRC",
+                  "attributes" : "raw:submitData.attributes.items"
+                }
+              }
+            },
+            {
+              "name": "requestSuccess:createRobot",
+              "type": "NOTIFY",
+              "config": {
+                "message": {
+                  "type": "TEMPLATE",
+                  "config": {
+                    "tpl": "Техническая учетная запись успешно создана"
+                  }
+                }
+              }
+            },
+            {
+              "name": "requestStart:createRobot,requestEnd:createRobot,requestStart:createRequestRobot,requestEnd:createRequestRobot",
+              "type": "FIELD_MUTATE",
+              "config": {
+                "data": {
+                  "loading": true
+                }
+              }
+            },
+            {
+              "name": "requestSuccess:createRobot,requestSuccess:createRequestRobot",
+              "type": "COMMIT",
+              "config": {
+                "model": [
+                  {
+                    "key": "submitData"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "requestSuccess:createRobot",
+              "type": "NAVIGATE",
+              "config": {
+                "to": "/technicalAccounts/{{payload:requestSuccess.createRobot.oid}}/info"
+              }
+            },
+            {
+              "name": "requestEnd,requestFail:createRobot.422,requestFail:createRequestRobot.422,requestFail:createRobot.500,requestFail:createRequestRobot.500",
+              "type": "FIELD_MUTATE",
+              "config": {
+                "data": {
+                  "loading": false
+                }
+              }
+            },
+            {
+              "name": "requestFail:createRobot.422,requestFail:createRobotFields.422,requestFail:createRequestRobot.422",
+              "type": "NOTIFY",
+              "config": {
+                "tone": "negative",
+                "message": {
+                  "type": "TEMPLATE",
+                  "config": {
+                    "tpl": "{{payload:error}}",
+                    "context": "newRobot",
+                    "args": {
+                      "resourceName": "local:submitData.resource.0.name"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "requestFail:createRobot.500,requestFail:createRobotFieldsrequestFail.500:createRequestRobot.500",
+              "type": "MODAL",
+              "id": "requestFailCreateRobot",
+              "config": {
+                "initialConfig": {
+                  "title": {
+                    "type": "TEMPLATE",
+                    "config": {
+                      "tpl": "Ошибка"
+                    }
+                  },
+                  "message": "payload:requestFail.500.userMessage",
+                  "pageName": {
+                    "type": "TEMPLATE",
+                    "config": {
+                      "tpl": "Создание ТУЗ"
+                    }
+                  },
+                  "lang": "json",
+                  "errorDisplay": "short"
+                },
+                "modelConfig": {
+                  "error": {
+                    "message": "payload:requestFail.500.exceptionMessage"
+                  }
+                },
+                "url": "config/modal/informationWindow"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

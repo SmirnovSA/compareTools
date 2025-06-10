@@ -1,0 +1,49 @@
+{
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "fields"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "itemPath": "extension/landscapeDescription",
+            "name": "landscape",
+            "format": "string",
+            "multiple": false,
+            "value": "raw:formData.data.landscape"
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "ignoreUndefined": true,
+          "path": "fields"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "itemPath": "extension/NeedReboot",
+            "name": "NeedReboot",
+            "format": "boolean",
+            "value": "raw:formData.data.NeedReboot",
+            "multiple": false,
+            "readonly": false
+          }
+        }
+      ]
+    }
+  ],
+  "metaData": {
+    "modifyDate": "2024-11-13T09:34:37.995Z"
+  }
+}

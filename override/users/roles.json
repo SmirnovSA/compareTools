@@ -1,0 +1,640 @@
+{
+  "__revisionModded": "f5bb35ab",
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "user_card_roles_widget"
+        },
+        {
+          "type": "GET",
+          "path": "items.14.config.widget.items.0.items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "type": "TEXT",
+            "config": {
+              "fieldLabel": "record:description"
+            },
+            "behavior": [
+              {
+                "type": "SHOW",
+                "config": {
+                  "condition": {
+                    "property": "record:type",
+                    "operator": "eq",
+                    "value": ["EXTENSION"]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "user_card_roles_widget"
+        },
+        {
+          "type": "GET",
+          "path": "items.14.config.widget.items.0.items.0"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET_MERGE",
+          "value": {
+            "behavior": [
+              {
+                "type": "SHOW",
+                "config": {
+                  "condition": {
+                    "property": "record:type",
+                    "operator": "eq",
+                    "inverse": true,
+                    "value": ["EXTENSION"]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "rolesData"
+        },
+        {
+          "type": "GET",
+          "path": "config.api.url"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "v2/user/roles/{{route:users}}"
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "roleName_cell"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 0,
+          "deleteCount": 0,
+          "value": [
+            {
+              "ref": "role-connector-description",
+              "type": "TEXT",
+              "config": {
+                "fieldLabel": "{{record:connectorDescription}}",
+                "tooltip": "{{record:connectorDescription}}",
+                "componentAttrs": {
+                  "lines": 6,
+                  "class": "text-wrap"
+                }
+              },
+              "behavior": [
+                {
+                  "type": "HIDDEN",
+                  "config": {
+                    "condition": {
+                      "property": "record:connectorDescription",
+                      "operator": "eq",
+                      "value": [""]
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "ref": "role-firs-description",
+              "type": "ITERATOR",
+              "config": {
+                "componentAttrs": {
+                  "class": "flex-column"
+                }
+              },
+              "modelBindings": {
+                "data": "record:firs"
+              },
+              "items": [
+                {
+                  "type": "TEXT",
+                  "config": {
+                    "fieldLabel": "{{record:$item}}",
+                    "tooltip": "{{record:$item}}",
+                    "componentAttrs": {
+                      "lines": 6,
+                      "class": "text-wrap",
+                      "style": ""
+                    }
+                  }
+                }
+              ],
+              "behavior": [
+                {
+                  "type": "HIDDEN",
+                  "config": {
+                    "condition": {
+                      "property": "record:firs",
+                      "operator": "empty",
+                      "value": []
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "ref": "role-firs-description-empty",
+              "type": "TEXT",
+              "config": {
+                "fieldLabel": "Роль не включена в информационный ресурс",
+                "componentAttrs": {
+                  "class": "text-wrap"
+                }
+              },
+              "behavior": [
+                {
+                  "type": "SHOW",
+                  "config": {
+                    "condition": {
+                      "property": "record:firs",
+                      "operator": "empty",
+                      "value": []
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "revoke_roles_user"
+        },
+        {
+          "type": "GET",
+          "path": "actions"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": [
+            {
+              "type": "MODAL",
+              "name": "click",
+              "id": "commentModal",
+              "config": {
+                "initialConfig": {
+                  "title": {
+                    "type": "TEMPLATE",
+                    "config": {
+                      "tpl": "Комментарий к заявке"
+                    }
+                  }
+                },
+                "url": "config/modal/comment"
+              }
+            },
+            {
+              "name": "modalSave",
+              "type": "API",
+              "id": "revokeRoles",
+              "config": {
+                "method": "POST",
+                "url": "v2/user/roles/revoke",
+                "payload": {
+                  "assignmentIds": "{{local:selectedRoles.items|take:id}}",
+                  "userId": "{{route:users}}",
+                  "comment": "payload:modalSave.comment"
+                }
+              }
+            },
+            {
+              "name": "requestSuccess",
+              "type": "NOTIFY_CUSTOM",
+              "config": {
+                "field": {
+                  "type": "NOTIFICATION_BASIC",
+                  "ref": "notification",
+                  "items": [
+                    {
+                      "type": "LAYOUT_ROW",
+                      "items": [
+                        {
+                          "type": "TEXT",
+                          "config": {
+                            "class": "text-bold",
+                            "fieldLabel": {
+                              "type": "TEMPLATE",
+                              "config": {
+                                "tpl": "Информация"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "TEXT_TRANSLATED",
+                          "config": {
+                            "class": "text-wrap",
+                            "tpl": "Заявка № %{link} на отзыв ролей успешно создана!",
+                            "context": "users"
+                          },
+                          "items": [
+                            {
+                              "type": "ROUTER_LINK",
+                              "config": {
+                                "toSlot": "link",
+                                "fieldLabel": "{{payload:requestSuccess.requestNumber.displayNumber}}",
+                                "to": "/requests/{{payload:requestSuccess.requestNumber.number}}"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "requestFail:revokeRoles.422",
+              "type": "NOTIFY_CUSTOM",
+              "config": {
+                "field": {
+                  "type": "NOTIFICATION_BASIC",
+                  "ref": "notification",
+                  "config": {
+                    "tone": "negative"
+                  },
+                  "items": [
+                    {
+                      "type": "LAYOUT_ROW",
+                      "items": [
+                        {
+                          "type": "TEXT_TRANSLATED",
+                          "config": {
+                            "tpl": "payload:requestFail.revokeRoles.422.data.message"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "period_roles_user"
+        },
+        {
+          "type": "GET",
+          "path": "actions"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": [
+            {
+              "name": "click",
+              "type": "MODAL",
+              "id": "dateModal",
+              "config": {
+                "commitData": true,
+                "source": "api",
+                "url": "config/modal/date",
+                "initialConfig": {
+                  "title": {
+                    "type": "TEMPLATE",
+                    "config": {
+                      "tpl": "Установить срок действия"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "MODAL",
+              "name": "modalSave:dateModal",
+              "id": "commentModal",
+              "config": {
+                "initialConfig": {
+                  "title": {
+                    "type": "TEMPLATE",
+                    "config": {
+                      "tpl": "Комментарий к заявке"
+                    }
+                  }
+                },
+                "url": "config/modal/comment"
+              }
+            },
+            {
+              "name": "modalSave:commentModal",
+              "type": "API",
+              "id": "apiCall",
+              "config": {
+                "method": "POST",
+                "payload": {
+                  "assignmentIds": "{{local:selectedRoles.items|take:id}}",
+                  "period": {
+                    "to": "{{payload:modalSave.dateModal.date|date_format}}"
+                  },
+                  "comment": "payload:modalSave.commentModal.comment",
+                  "userId": "route:users"
+                },
+                "url": "v2/user/roles/change-period"
+              }
+            },
+            {
+              "name": "requestSuccess:apiCall",
+              "type": "NOTIFY_CUSTOM",
+              "config": {
+                "field": {
+                  "type": "NOTIFICATION_BASIC",
+                  "ref": "notification",
+                  "items": [
+                    {
+                      "type": "LAYOUT_ROW",
+                      "items": [
+                        {
+                          "type": "TEXT",
+                          "config": {
+                            "class": "text-bold",
+                            "fieldLabel": {
+                              "type": "TEMPLATE",
+                              "config": {
+                                "tpl": "Информация"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "TEXT_TRANSLATED",
+                          "config": {
+                            "class": "text-wrap",
+                            "tpl": "Заявка № %{link} на изменение срока ролей успешно создана!",
+                            "context": "users"
+                          },
+                          "items": [
+                            {
+                              "type": "ROUTER_LINK",
+                              "config": {
+                                "toSlot": "link",
+                                "fieldLabel": "{{payload:requestSuccess.apiCall.requestNumber.0.displayNumber}}",
+                                "to": "/requests/{{payload:requestSuccess.apiCall.requestNumber.0.number}}"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "requestFail:apiCall",
+              "type": "NOTIFY_CUSTOM",
+              "config": {
+                "field": {
+                  "type": "NOTIFICATION_BASIC",
+                  "ref": "notification",
+                  "config": {
+                    "tone": "negative"
+                  },
+                  "items": [
+                    {
+                      "type": "LAYOUT_ROW",
+                      "items": [
+                        {
+                          "type": "TEXT_TRANSLATED",
+                          "config": {
+                            "tpl": "payload:requestFail.apiCall.data.message"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "revoke_roles_user"
+        },
+        {
+          "type": "GET",
+          "path": "config.fieldLabel.config.tpl"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "Отозвать (согласование Руководителем)"
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "revoke_roles_user"
+        },
+        {
+          "type": "GET",
+          "path": "actions",
+          "ignoreUndefined": true
+        },
+        {
+          "type": "FIND",
+          "property": "name",
+          "operator": "eq",
+          "value": "modalSave"
+        },
+        {
+          "type": "GET",
+          "path": "config.payload.revokeType",
+          "ignoreUndefined": true
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "manager"
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "roles_actions_dropdown"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 1,
+          "value": {
+            "type": "MENU_ITEM",
+            "config": {
+              "class": "toolbar-item",
+              "fieldLabel": {
+                "type": "TEMPLATE",
+                "config": {
+                  "tpl": "Отозвать (согласование Согласующим ресурса)"
+                }
+              }
+            },
+            "actions": [
+              {
+                "type": "MODAL",
+                "name": "click",
+                "id": "commentModal",
+                "config": {
+                  "initialConfig": {
+                    "title": {
+                      "type": "TEMPLATE",
+                      "config": {
+                        "tpl": "Комментарий к заявке"
+                      }
+                    }
+                  },
+                  "url": "config/modal/comment"
+                }
+              },
+              {
+                "name": "modalSave",
+                "type": "API",
+                "config": {
+                  "method": "POST",
+                  "url": "v2/user/roles/revoke",
+                  "payload": {
+                    "assignmentIds": "{{local:selectedRoles.items|take:id}}",
+                    "userId": "{{route:users}}",
+                    "comment": "payload:modalSave.comment",
+                    "revokeType": "ownerIR"
+                  }
+                }
+              },
+              {
+                "name": "requestSuccess",
+                "type": "NOTIFY_CUSTOM",
+                "config": {
+                  "field": {
+                    "type": "NOTIFICATION_BASIC",
+                    "ref": "notification",
+                    "items": [
+                      {
+                        "type": "LAYOUT_ROW",
+                        "items": [
+                          {
+                            "type": "TEXT",
+                            "config": {
+                              "class": "text-bold",
+                              "fieldLabel": {
+                                "type": "TEMPLATE",
+                                "config": {
+                                  "tpl": "Информация"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "type": "TEXT_TRANSLATED",
+                            "config": {
+                              "class": "text-wrap",
+                              "tpl": "Заявка № %{link} на отзыв ролей успешно создана!",
+                              "context": "users"
+                            },
+                            "items": [
+                              {
+                                "type": "ROUTER_LINK",
+                                "config": {
+                                  "toSlot": "link",
+                                  "fieldLabel": "{{payload:requestSuccess.requestNumber.displayNumber}}",
+                                  "to": "/requests/{{payload:requestSuccess.requestNumber.number}}"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            ],
+            "behavior": [
+              {
+                "type": "HIDDEN",
+                "config": {
+                  "condition": {
+                    "OR": [
+                      {
+                        "property": "local:rolesData.metaData.accesses.canRevokeRoles",
+                        "operator": "eq",
+                        "value": [false]
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

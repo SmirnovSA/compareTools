@@ -1,0 +1,192 @@
+{
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "formFields.create.params"
+        },
+        {
+          "type": "GET",
+          "path": "0.items.0.items.1.items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 0,
+          "deleteCount": 1,
+          "value": {
+            "ref": "intentGRCSelector",
+            "type": "SELECT",
+            "config": {
+              "value": "local:formData.data.intentGRC",
+              "translate": {
+                "enable": true
+              },
+              "rules": [
+                {
+                  "type": "PRESENCE",
+                  "message": {
+                    "type": "TEMPLATE",
+                    "config": {
+                      "tpl": "Обязательное поле"
+                    }
+                  },
+                  "condition": {
+                    "property": "local:formData.data.intentGRC",
+                    "operator": "empty"
+                  }
+                }
+              ],
+              "componentAttrs": {
+                "style": "width:100%;",
+                "clearable": true,
+                "option-value": "id",
+                "option-label": "name"
+              },
+              "options": [
+                { "id": "B", "name": "B - система" },
+                { "id": "C", "name": "C - связь" },
+                { "id": "L", "name": "L - ссылка" },
+                { "id": "S", "name": "S - сервис" }
+              ],
+              "fieldLabel": "Тип УЗ (GRC AC)"
+            },
+            "behavior": [
+              {
+                "type": "HIDDEN",
+                "config": {
+                  "condition": {
+                    "and": [
+                      {
+                        "property": "local:formData.data.resource.0.name",
+                        "operator": "eq",
+                        "inverse": true,
+                        "value": "ESBAsyncGRC"
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "formFields.create.params"
+        },
+        {
+          "type": "GET",
+          "path": "0.items.1.items.1.behavior"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": []
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "approve"
+        },
+        {
+          "type": "GET",
+          "path": "behavior"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": [
+            {
+              "type": "HIDDEN",
+              "config": {
+                "condition": {
+                  "and": [
+                    {
+                      "property": "local:formData.data.intentGRC",
+                      "operator": "empty"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "password"
+        },
+        {
+          "type": "GET",
+          "path": "behavior"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": [
+            {
+              "type": "HIDDEN",
+              "config": {
+                "condition": {
+                  "and": [
+                    {
+                      "property": "local:formData.data.resource",
+                      "operator": "empty"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "approve"
+        },
+        {
+          "type": "GET",
+          "path": "behavior"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": [
+            {
+              "type": "HIDDEN",
+              "config": {
+                "condition": {
+                  "and": [
+                    {
+                      "property": "local:formData.data.resource",
+                      "operator": "empty"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

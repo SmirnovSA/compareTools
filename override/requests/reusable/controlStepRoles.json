@@ -1,0 +1,202 @@
+{
+  "__revisionModded": "f5bb35ab",
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "gen-layout_flex_column-1-scroll_area-0-layout_row-0-list_inline-list_row-0-cell_empty-0-layout_row-1-layout_flex_column"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 2,
+          "deleteCount": 0,
+          "value": {
+            "ref": "role-connector-description",
+            "type": "TEXT",
+            "config": {
+              "fieldLabel": "{{record:connectorDescription}}",
+              "tooltip": "{{record:connectorDescription}}",
+              "componentAttrs": {
+                "lines": 6,
+                "class": "text-wrap"
+              }
+            },
+            "behavior": [
+              {
+                "type": "HIDDEN",
+                "config": {
+                  "condition": {
+                    "property": "record:connectorDescription",
+                    "operator": "eq",
+                    "value": [""]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "users_control_list"
+        },
+        {
+          "type": "GET",
+          "path": "config.widget.behavior",
+          "ignoreUndefined": true
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": [
+            {
+              "type": "BINARY",
+              "config": {
+                "condition": {
+                  "property": "record:id",
+                  "operator": "in",
+                  "value": "{{local:duplicateRolesOnly.items|take:oid}}"
+                },
+                "config": {
+                  "style": "background-color: var(--q-row-negative-background);"
+                }
+              }
+            }
+          ]        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 1,
+          "deleteCount": 0,
+          "value": {
+            "type": "BANNER",
+            "config": {
+              "role": "danger",
+              "label": "Внимание",
+              "componentAttrs": {
+                "class": "q-mb-md"
+              }
+            },
+            "behavior": [
+              {
+                "type": "SHOW",
+                "config": {
+                  "condition": {
+                    "and": [
+                      {
+                        "property": "local:duplicateRoles.items",
+                        "operator": "empty",
+                        "inverse": true
+                      }
+                    ]
+                  }
+                }
+              }
+            ],
+            "items": [
+              {
+                "type": "ICON",
+                "config": {
+                  "toSlot": "avatar",
+                  "class": "text-negative",
+                  "icon": {
+                    "type": "LIBRARY",
+                    "config": {
+                      "value": "warning_amber",
+                      "size": "md"
+                    }
+                  }
+                }
+              },
+              {
+                "type": "ITERATOR",
+                "config": {
+                  "toSlot": "after",
+                  "delimiter": "",
+                  "limit": "{{local:duplicateRoles.items.length}}"
+                },
+                "modelBindings": {
+                  "data": "local:duplicateRoles.items"
+                },
+                "items": [
+                  {
+                    "type": "LAYOUT_ROW",
+                    "items": [
+                      {
+                        "type": "TEXT_INLINE",
+                        "config": {
+                          "fieldLabel": "Пользователю"
+                        }
+                      },
+                      {
+                        "type": "TEXT_INLINE",
+                        "config": {
+                          "class": "text-bold",
+                          "fieldLabel": "{{record:userName}}",
+                          "componentAttrs": {
+                            "class": "q-ml-sm"
+                          }
+                        }
+                      },
+                      {
+                        "type": "TEXT_INLINE",
+                        "config": {
+                          "fieldLabel": "уже назначены роли:",
+                          "componentAttrs": {
+                            "class": "q-ml-sm"
+                          }
+                        }
+                      },
+                      {
+                        "type": "ITERATOR",
+                        "config": {
+                          "delimiter": ", ",
+                          "limit": "{{record:roles.length}}",
+                          "componentAttrs": {
+                            "class": "q-ml-sm"
+                          },"itemClass": "ife-inline-flex"
+                        },
+                        "modelBindings": {
+                          "data": "record:roles"
+                        },
+                        "items": [
+                          {
+                            "type": "TEXT_INLINE",
+                            "config": {
+                              "class": "text-bold",
+                              "fieldLabel": "{{record:name}}"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

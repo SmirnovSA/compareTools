@@ -1,0 +1,22 @@
+{
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "search"
+        },
+        {
+          "type": "GET",
+          "path": "config.placeholder.config.tpl"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "Номер заявки"
+        }
+      ]
+    }
+  ]
+}

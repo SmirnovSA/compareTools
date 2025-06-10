@@ -1,0 +1,139 @@
+{
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "formFields.createBasicInformation"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "ref": "landscape-edit",
+            "type": "INPUT",
+            "config": {
+              "placeholder": "",
+              "clearable": true,
+              "hideBottomSpace": true,
+              "value": "record:landscape",
+              "fieldLabel": "Ландшафт (GRC AC)",
+              "size": "lg"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "ignoreUndefined": true,
+          "path": "formFields.createBasicInformation"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "ref": "NeedReboot-edit",
+            "type": "CHECKBOX",
+            "config": {
+              "fieldLabel": "Необходимость перезагрузки ПК",
+              "value": "record:NeedReboot",
+              "componentAttrs": {
+                "toggle-indeterminate": false
+              },
+              "hideBottomSpace": true
+            },
+            "behavior": [
+              {
+                "type": "BINARY",
+                "config": {
+                  "condition": {
+                    "property": "record:NeedReboot",
+                    "operator": "eq",
+                    "value": [
+                      null
+                    ]
+                  },
+                  "config": {
+                    "falseValue": null
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "ignoreUndefined": true,
+          "path": "formFields.readBasicInformation"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "ref": "NeedReboot",
+            "type": "DISPLAY_FIELD",
+            "config": {
+              "fieldLabel": "Необходимость перезагрузки ПК",
+              "data": "record:$item",
+              "editMode": "false"
+            },
+            "items": [
+              {
+                "type": "TEXT",
+                "config": {
+                  "fieldLabel": "{{record:NeedReboot|boolean}}"
+                },
+                "format": [
+                  {
+                    "type": "BOOLEAN",
+                    "key": "boolean",
+                    "config": {
+                      "positive": "Да",
+                      "negative": "Нет"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "ref": "landscape_read",
+            "type": "DISPLAY_FIELD",
+            "config": {
+              "text": "record:landscape",
+              "fieldLabel": "Ландшафт (GRC AC)"
+            },
+            "behavior": [
+              {
+                "type": "SHOW",
+                "config": {
+                  "condition": {
+                    "property": "record:landscape",
+                    "inverse": true,
+                    "operator": "empty"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "metaData": {
+    "modifyDate": "2024-11-13T09:45:34.836Z"
+  }
+}

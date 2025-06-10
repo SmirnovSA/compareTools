@@ -1,0 +1,467 @@
+{
+  "__revisionModded": "f5bb35ab",
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "requestStateTag"
+        },
+        {
+          "type": "GET",
+          "path": "items.8.items.6.items.0.actions.0.config.modelConfig.requestItemIds"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": ["record:itemId"]
+        }
+      ]
+    },
+    {
+      "findTarget": [
+
+        {
+          "type": "FIND_BY_REF",
+          "value": "requestStateTag"
+        },
+        {
+          "type": "GET",
+          "path": "items.8.items.6.items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "type": "TEXT",
+            "config": {
+              "fieldLabel": "выявлены конфликты",
+              "componentAttrs": {
+                "class": "text-red cursor-pointer",
+                "style": "text-decoration: underline; text-decoration-style: dotted;"
+              }
+            },
+            "actions": [
+              {
+                "type": "API",
+                "name": "click",
+                "id": "getRoleConflicts",
+                "config": {
+                  "method": "GET",
+                  "payload": {},
+                  "url": "v3/requests/{{route:requests}}/items/{{local:requestUsers.items.0.id}}/conflicts/{{record:role.id}}"
+                }
+              },
+              {
+                "type": "MODAL",
+                "name": "requestSuccess:getRoleConflicts",
+                "id": "conflictsModal",
+                "config": {
+                  "url": "config/modal/requestConflicts",
+                  "modelConfig": {
+                    "conflicts": "payload:requestSuccess.getRoleConflicts.data"
+                  }
+                }
+              }
+            ],
+            "behavior": [
+              {
+                "type": "SHOW",
+                "config": {
+                  "condition": {
+                    "or": [
+                      {
+                        "property": "record:role.id",
+                        "operator": "in",
+                        "value": "local:conflictRoles.items"
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+
+        {
+          "type": "FIND_BY_REF",
+          "value": "error"
+        },
+        {
+          "type": "GET",
+          "path": "behavior"
+        },
+        {
+          "type": "FIND",
+          "property": "type",
+          "operator": "eq",
+          "value": "SHOW"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": {
+            "type": "SHOW",
+            "config": {
+              "condition": {
+                "or": [
+                  {
+                    "property": "record:errors",
+                    "operator": "empty",
+                    "inverse": true,
+                    "value": []
+                  },
+                  {
+                    "property": "record:role.id",
+                    "operator": "in",
+                    "value": "local:conflictRoles.items"
+                  }
+                ]
+              }
+            }
+          }
+
+
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "delegate"
+        },
+        {
+          "type": "GET",
+          "path": "behavior"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "type": "HIDDEN",
+            "config": {
+              "condition": {
+                "or": [
+                  {
+                    "property": "global:auth.currentUser.rights.all",
+                    "operator": "eq",
+                    "inverse": true,
+                    "value": [true]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "items.0.config.componentAttrs"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET_MERGE",
+          "value": {
+            "sty1le": "align-items: start;"
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "requestStateTag"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 2,
+          "deleteCount": 0,
+          "value": {
+            "type": "LAYOUT_FLEX",
+            "config": {
+              "toSlot": "panelLeft",
+              "componentAttrs": {
+                "componentClass": "flex-0"
+              }
+            },
+            "items": [
+              {
+                "ref": "role-description",
+                "type": "LAYOUT_ROW",
+                "behavior": [
+                  {
+                    "type": "HIDDEN",
+                    "config": {
+                      "condition": {
+                        "property": "record:role.description",
+                        "operator": "empty",
+                        "value": []
+                      }
+                    }
+                  }
+                ],
+                "items": [
+                  {
+                    "type": "TEXT",
+                    "config": {
+                      "fieldLabel": "Описание роли:",
+                      "componentAttrs": {
+                        "class": "text-bold",
+                        "style": "min-width: 115px"
+                      }
+                    }
+                  },
+                  {
+                    "type": "TEXT_INLINE",
+                    "config": {
+                      "fieldLabel": "{{record:role.description}};",
+                      "tooltip": "{{record:role.description}}",
+                      "componentAttrs": {
+                        "lines": 6,
+                        "class": "text-wrap"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "ref": "role-connector-description",
+                "type": "LAYOUT_ROW",
+                "behavior": [
+                  {
+                    "type": "HIDDEN",
+                    "config": {
+                      "condition": {
+                        "property": "record:role.connectorDescription",
+                        "operator": "empty",
+                        "value": []
+                      }
+                    }
+                  }
+                ],
+                "items": [
+                  {
+                    "type": "TEXT_INLINE",
+                    "config": {
+                      "fieldLabel": "Ландшафт GRC:",
+                      "componentAttrs": {
+                        "class": "text-bold",
+                        "style": "min-width: 115px"
+                      }
+                    }
+                  },
+                  {
+                    "type": "TEXT_INLINE",
+                    "config": {
+                      "fieldLabel": "{{record:role.connectorDescription}};",
+                      "tooltip": "{{record:role.connectorDescription}}",
+                      "componentAttrs": {
+                        "lines": 6,
+                        "class": "text-wrap"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "ref": "role-firs-description",
+                "type": "LAYOUT_ROW",
+                "behavior": [
+                  {
+                    "type": "HIDDEN",
+                    "config": {
+                      "condition": {
+                        "property": "record:role.firs",
+                        "operator": "empty",
+                        "value": []
+                      }
+                    }
+                  }
+                ],
+                "items": [
+                  {
+                    "type": "TEXT_INLINE",
+                    "config": {
+                      "fieldLabel": "Наименование ИР:",
+                      "componentAttrs": {
+                        "class": "text-bold",
+                        "style": "min-width: 135px"
+                      }
+                    }
+                  },
+                  {
+                    "type": "ITERATOR",
+                    "modelBindings": {
+                      "data": "record:role.firs"
+                    },
+                    "items": [
+                      {
+                        "type": "TEXT",
+                        "config": {
+                          "fieldLabel": "{{record:$item}};",
+                          "tooltip": "{{record:$item}}",
+                          "componentAttrs": {
+                            "lines": 6,
+                            "class": "text-wrap",
+                            "style": "white-space: nowrap;"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "ref": "role-firs-description-empty",
+                "type": "TEXT",
+                "config": {
+                  "fieldLabel": "Роль не включена в информационный ресурс",
+                  "componentAttrs": {
+                    "style": "white-space: nowrap;"
+                  }
+                },
+                "behavior": [
+                  {
+                    "type": "SHOW",
+                    "config": {
+                      "condition": {
+                        "property": "record:role.firs",
+                        "operator": "empty",
+                        "value": []
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 0,
+          "deleteCount": "0",
+          "value": {
+            "type": "BANNER",
+            "config": {
+              "label": {
+                "type": "TEMPLATE",
+                "config": { "tpl": "Внимание" }
+              },
+              "description": {
+                "type": "TEMPLATE",
+                "config": { "tpl": "По заявке выявлены конфликты полномочий" }
+              },
+              "inlineActions": true,
+              "role": "danger",
+              "componentAttrs": {
+                "class": "q-mb-sm",
+                "style": "justify-content: flex-start !important;"
+              }
+            },
+            "behavior": [
+              {
+                "type": "SHOW",
+                "config": {
+                  "condition": {
+                    "AND": [
+                      {
+                        "property": "local:conflictRoles.items",
+                        "operator": "empty",
+                        "inverse": true,
+                        "value": []
+                      }
+                    ]
+                  }
+                }
+              }
+            ],
+            "items": [
+              {
+                "type": "ICON",
+                "config": {
+                  "toSlot": "avatar",
+                  "class": "text-negative",
+                  "icon": {
+                    "type": "LIBRARY",
+                    "config": {
+                      "value": "warning_amber",
+                      "size": "md"
+                    }
+                  }
+                }
+              },
+              {
+                "type": "BUTTON",
+                "config": {
+                  "toSlot": "action",
+                  "fieldLabel": {
+                    "type": "TEMPLATE",
+                    "config": {
+                      "tpl": "Посмотреть"
+                    }
+                  },
+                  "mode": "outline",
+                  "role": "secondary",
+                  "size": "md"
+                },
+                "actions": [
+                  {
+                    "type": "API",
+                    "name": "click",
+                    "id": "getRoleConflicts",
+                    "config": {
+                      "method": "GET",
+                      "payload": {},
+                      "url": "v3/requests/{{route:requests}}/items/{{local:requestUsers.items.0.id}}/conflicts/all"
+                    }
+                  },
+                  {
+                    "type": "MODAL",
+                    "name": "requestSuccess:getRoleConflicts",
+                    "id": "conflictsModal",
+                    "config": {
+                      "url": "config/modal/requestConflicts",
+                      "modelConfig": {
+                        "conflicts": "payload:requestSuccess.getRoleConflicts.data"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

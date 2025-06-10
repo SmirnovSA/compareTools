@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="./favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preload" href="./fonts/ONYOne-Light.otf" as="font" type="font/otf" crossorigin />
+    <link rel="preload" href="./fonts/ONYOne-Medium.otf" as="font" type="font/otf" crossorigin />
+    <link rel="preload" href="./fonts/ONYOne-Regular.otf" as="font" type="font/otf" crossorigin />
+    <title>Vite Admin App</title>
+    <style>
+      body {
+        overflow: hidden;
+        font-family: "Ony", sans-serif !important;
+      }
+
+      #q-app-loading {
+        opacity: 1 !important;
+        --background-color: #f0f0f0;
+        --primary: #999999;
+      }
+
+      .initial-dark #q-app-loading {
+        --background-color: #555555;
+        --primary: #999999;
+      }
+
+      #app {
+        opacity: 0;
+      }
+
+      #app.fade-in {
+        animation: fadein 1000ms;
+        opacity: 1;
+      }
+
+      @keyframes fadein {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes fadeout {
+        from {
+          opacity: 0.5;
+        }
+        to {
+          opacity: 0;
+        }
+      }
+
+      .z-max {
+        z-index: 9998 !important;
+      }
+
+      .fullscreen {
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: 0;
+        border-radius: 0 !important;
+        max-height: 100vh;
+        max-width: 100vw;
+        z-index: 4999;
+      }
+
+      #q-app-loading .q-loading {
+        color: var(--primary) !important;
+        position: fixed !important;
+        align-items: center;
+        justify-content: center;
+        display: flex;
+      }
+
+      #q-app-loading .q-loading__backdrop {
+        background-color: var(--background-color) !important;
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+        position: fixed;
+        right: 0;
+        top: 0;
+        transition: background-color 0.28s;
+        z-index: -1;
+      }
+
+      #q-app-loading .q-loading__box {
+        border-radius: 4px;
+        color: var(--primary);
+        max-width: 450px;
+        padding: 18px;
+      }
+
+      #q-app-loading .q-spinner {
+        vertical-align: middle;
+      }
+
+      #q-app-loading .q-spinner-mat {
+        animation: q-spin 2s linear infinite;
+        transform-origin: center center;
+      }
+
+      #q-app-loading .q-spinner-mat .path {
+        stroke-dasharray: 1, 200;
+        stroke-dashoffset: 0;
+        animation: q-mat-dash 1.5s ease-in-out infinite;
+      }
+
+      @keyframes q-spin {
+        0% {
+          transform: rotate(0deg);
+        }
+
+        25% {
+          transform: rotate(90deg);
+        }
+
+        50% {
+          transform: rotate(180deg);
+        }
+
+        75% {
+          transform: rotate(270deg);
+        }
+
+        to {
+          transform: rotate(359deg);
+        }
+      }
+
+      @keyframes q-mat-dash {
+        0% {
+          stroke-dasharray: 1, 200;
+          stroke-dashoffset: 0;
+        }
+
+        50% {
+          stroke-dasharray: 89, 200;
+          stroke-dashoffset: -35px;
+        }
+
+        to {
+          stroke-dasharray: 89, 200;
+          stroke-dashoffset: -124px;
+        }
+      }
+
+      @font-face {
+        font-family: "Ony";
+        src: url("fonts/ONYOne-Light.otf") format("opentype");
+        font-weight: 100;
+        font-style: normal;
+      }
+
+      @font-face {
+        font-family: "Ony";
+        src: url("fonts/ONYOne-Light.otf") format("opentype");
+        font-weight: 200;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Ony";
+        src: url("fonts/ONYOne-Light.otf") format("opentype");
+        font-weight: 300;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Ony";
+        src: url("fonts/ONYOne-Light.otf") format("opentype");
+        font-weight: 400;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Ony";
+        src: url("fonts/ONYOne-Regular.otf") format("opentype");
+        font-weight: 500;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Ony";
+        src: url("fonts/ONYOne-Regular.otf") format("opentype");
+        font-weight: 600;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Ony";
+        src: url("fonts/ONYOne-Medium.otf") format("opentype");
+        font-weight: 700;
+        font-style: normal;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/main-2c8041a0.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/vendor-107dd017.js">
+    <link rel="modulepreload" crossorigin href="./assets/quasar-de77cd5c.js">
+    <link rel="modulepreload" crossorigin href="./assets/codemirror-6b123954.js">
+    <link rel="stylesheet" href="./assets/vendor-b19c857d.css">
+    <link rel="stylesheet" href="./assets/quasar-76a27cd3.css">
+    <link rel="stylesheet" href="./assets/admin-aa251358.css">
+  </head>
+  <body class="initial-dark">
+    <script>
+      localStorage.getItem("darkMode") !== "1" && document.body.classList.remove("initial-dark");
+    </script>
+    <div id="app"></div>
+    <div id="q-app-loading" style="opacity: 0">
+      <div class="q-loading fullscreen flex flex-center z-max">
+        <div class="q-loading__backdrop"></div>
+        <div class="q-loading__box column items-center">
+          <svg class="q-spinner q-spinner-mat q-loading__spinner" width="5rem" height="5rem" viewBox="25 25 50 50">
+            <circle
+              class="path"
+              cx="50"
+              cy="50"
+              r="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="5"
+              stroke-miterlimit="10"
+            ></circle>
+          </svg>
+        </div>
+      </div>
+    </div>
+    
+  </body>
+</html>

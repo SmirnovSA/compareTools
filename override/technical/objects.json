@@ -1,0 +1,99 @@
+{
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "gen-layout_flex_column-4-layout_toolbar-1-upload_button"
+        },
+        {
+          "type": "GET",
+          "path": "behavior.0.config.condition"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": {
+            "or": [
+              {
+                "property": "global:app.systemSettings.systemProfile",
+                "operator": "eq",
+                "value": ["production"]
+              },
+              {
+                "property": "global:auth.currentUser.rights.all",
+                "operator": "eq",
+                "inverse": true,
+                "value": [true]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "gen-layout_flex_column-4-layout_toolbar-0-checkbox"
+        },
+        {
+          "type": "GET",
+          "path": "behavior.0.config.condition"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": {
+            "or": [
+              {
+                "property": "global:app.systemSettings.systemProfile",
+                "operator": "eq",
+                "value": ["production"]
+              },
+              {
+                "property": "global:auth.currentUser.rights.all",
+                "operator": "eq",
+                "inverse": true,
+                "value": [true]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "gen-layout_flex_column-2-layout_row-7-toolbar_dropdown-2-menu_item"
+        },
+        {
+          "type": "GET",
+          "path": "behavior",
+          "ignoreUndefined": true
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": [
+            {
+              "type": "HIDDEN",
+              "config": {
+                "condition": {
+                  "property": "global:auth.currentUser.rights.all",
+                  "operator": "eq",
+                  "inverse": true,
+                  "value": [true]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

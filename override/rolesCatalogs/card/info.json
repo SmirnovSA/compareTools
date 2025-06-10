@@ -1,0 +1,673 @@
+{
+  "__revisionModded": "f5bb35ab",
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "key": "approvals",
+            "type": "REMOTE",
+            "config": {
+              "api": {
+                "url": "rolecatalog/{{route:id}}/lukoil/approvals",
+                "method": "GET"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "edit_icon"
+        },
+        {
+          "type": "GET",
+          "path": "actions"
+        },
+        {
+          "type": "FIND",
+          "property": "type",
+          "operator": "eq",
+          "value": "RELOAD"
+        },
+        {
+          "type": "GET",
+          "path": "config.model"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "key": "approvals",
+            "force": true
+          }
+        }
+      ]
+    },    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "edit_icon"
+        },
+        {
+          "type": "GET",
+          "path": "actions"
+        },
+        {
+          "type": "FIND",
+          "property": "type",
+          "operator": "eq",
+          "value": "RELOAD"
+        },
+        {
+          "type": "GET",
+          "path": "config.model"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "key": "landscapes",
+            "force": true
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "items.0.items.0.items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "type": "LAYOUT_TWO_COLUMNS",
+            "config": {
+              "class": "no-padding gap-lg",
+              "componentAttrs": {
+                "style": "padding-right: 26px !important;"
+              }
+            },
+            "items": []
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "edit_icon"
+        },
+        {
+          "type": "GET",
+          "path": "actions"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 1,
+          "deleteCount": 1,
+          "value": [
+            {
+              "name": "modalSave:editModal.successInfoEdit",
+              "type": "API",
+              "id": "saveApprovals",
+              "config": {
+                "method": "PUT",
+                "url": "rolecatalog/{{route:id}}/lukoil/approvals",
+                "payload": "{{{payload:modalSave.editModal.successInfoEdit.approvals|take:id}}}"
+              },
+              "condition": {
+                "property": "{{payload:modalSave.editModal.successInfoEdit.approvals|take:isRelated|every}}",
+                "operator": "eq",
+                "value": [
+                  true
+                ]
+              }
+            },
+            {
+              "name": "modalSave:editModal.successInfoEdit",
+              "type": "ALERT_MODAL",
+              "id": "confirmModal",
+              "config": {
+                "title": {
+                  "type": "TEMPLATE",
+                  "config": {
+                    "tpl": "Внимание"
+                  }
+                },
+                "message": {
+                  "type": "TEMPLATE",
+                  "config": {
+                    "tpl": "У информационного ресурса нет связи с маршрутом согласования. \nВы действительно хотите добавить маршрут в ресурс?"
+                  }
+                },
+                "persistent": true,
+                "cancel": {
+                  "label": {
+                    "type": "TEMPLATE",
+                    "config": {
+                      "tpl": "Нет"
+                    }
+                  },
+                  "color": "white",
+                  "textColor": "black"
+                },
+                "ok": {
+                  "label": {
+                    "type": "TEMPLATE",
+                    "config": {
+                      "tpl": "Да, продолжить"
+                    }
+                  }
+                }
+              },
+              "condition": {
+                "property": "{{payload:modalSave.editModal.successInfoEdit.approvals|take:isRelated|every}}",
+                "operator": "eq",
+                "inverse": true,
+                "value": [
+                  true
+                ]
+              }
+            },
+            {
+              "name": "alertConfirm:confirmModal",
+              "type": "API",
+              "id": "saveApprovals",
+              "config": {
+                "method": "PUT",
+                "url": "rolecatalog/{{route:id}}/lukoil/approvals",
+                "payload": "{{{payload:modalSave.editModal.successInfoEdit.approvals|take:id}}}"
+              }
+            },
+            {
+              "name": "requestSuccess:saveApprovals",
+              "type": "API",
+              "id": "saveCatalog",
+              "config": {
+                "method": "PUT",
+                "url": "v2/data-forms/catalog/objects/{{route:id}}",
+                "payload": {
+                  "type": "CONVERT",
+                  "config": {
+                    "source": "payload:modalSave.editModal.successInfoEdit.formData",
+                    "mods": [
+                      {
+                        "findTarget": [
+                          {
+                            "type": "GET",
+                            "path": "fullName",
+                            "ignoreUndefined": true
+                          }
+                        ],
+                        "modify": [
+                          {
+                            "type": "SET",
+                            "value": "{{payload:modalSave.editModal.successInfoEdit.formData.fullName.orig}}"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              },
+              "condition": {
+                "property": "payload:modalSave.editModal.successInfoEdit.formState.createRequest",
+                "operator": "eq",
+                "inverse": true,
+                "debug": true,
+                "value": [true]
+              }
+            },
+            {
+              "type": "MODAL",
+              "name": "requestSuccess:saveApprovals",
+              "id": "commentModal",
+              "config": {
+                "initialConfig": {
+                  "title": {
+                    "type": "TEMPLATE",
+                    "config": {
+                      "tpl": "Комментарий к заявке"
+                    }
+                  },
+                  "subTitle": {
+                    "type": "TEMPLATE",
+                    "config": {
+                      "tpl": "Укажите подробности заявки: в связи с чем она составляется. Это поможет оперативнее принять решение."
+                    }
+                  }
+                },
+                "url": "config/modal/comment"
+              },
+              "condition": {
+                "property": "payload:modalSave.editModal.successInfoEdit.formState.createRequest",
+                "operator": "eq",
+                "value": [true]
+              }
+            },
+            {
+              "name": "modalSave:commentModal",
+              "type": "API",
+              "id": "updateRequest",
+              "config": {
+                "url": "v2/prism-objects/{{route:id}}/create-update-request",
+                "method": "PATCH",
+                "payload": {
+                  "fields": "payload:modalSave.editModal.successInfoEdit.fields",
+                  "comment": "payload:modalSave.commentModal.comment"
+                },
+                "id": "successInfoEdit"
+              }
+            },
+            {
+              "name": "requestSuccess:updateRequest",
+              "type": "NOTIFY_CUSTOM",
+              "config": {
+                "duration": 5000,
+                "position": "top-right",
+                "field": {
+                  "type": "NOTIFICATION_BASIC",
+                  "ref": "notification",
+                  "items": [
+                    {
+                      "type": "LAYOUT_ROW",
+                      "items": [
+                        {
+                          "type": "TEXT",
+                          "config": {
+                            "fieldLabel": {
+                              "type": "TEMPLATE",
+                              "config": {
+                                "tpl": "Информация"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "TEXT_TRANSLATED",
+                          "config": {
+                            "class": "text-wrap",
+                            "tpl": "Заявка %{link} на изменение каталога ролей успешно создана!"
+                          },
+                          "items": [
+                            {
+                              "type": "ROUTER_LINK",
+                              "config": {
+                                "toSlot": "link",
+                                "fieldLabel": "№{{payload:requestSuccess.updateRequest.requestNumber.0.displayNumber}}",
+                                "to": "/requests/{{payload:requestSuccess.updateRequest.requestNumber.0.number}}"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "requestSuccess:saveCatalog",
+              "type": "RELOAD",
+              "config": {
+                "model": [
+                  {
+                    "key": "rolesCatalogCard.catalogInfo",
+                    "force": true
+                  },
+                  {
+                    "key": "formData",
+                    "force": true
+                  },
+                  {
+                    "key": "landscapes",
+                    "force": true
+                  },
+                  {
+                    "key": "approvals",
+                    "force": true
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "items.0.items.0.items.1.items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "ref": "approvals",
+            "type": "DISPLAY_FIELD",
+            "config": {
+              "fieldLabel": {
+                "type": "TEMPLATE",
+                "config": {
+                  "tpl": "Маршрут согласования"
+                }
+              },
+              "data": "local:approvals.items",
+              "editMode": "false",
+              "hidden": true,
+              "componentAttrs": {
+                "style": "flex:1;",
+                "class": "col-md-5 col-xs-12"
+              }
+            },
+            "items": [
+              {
+                "type": "ITERATOR",
+                "config": {
+                  "componentAttrs": {
+                    "class": "flex-column"
+                  }
+                },
+                "modelBindings": {
+                  "data": "local:approvals.items"
+                },
+                "items": [
+                  {
+                    "type": "LAYOUT_ROW",
+                    "config": {
+                      "componentAttrs": {
+                        "componentClass": "flex items-center gap-sm"
+                      }
+                    },
+                    "items": [
+                      {
+                        "type": "ICON",
+                        "config": {
+                          "icon": {
+                            "type": "SVG_PATH",
+                            "config": {
+                              "class": "opacity-5",
+                              "size": "25px",
+                              "value": "M16.5 13H15V16.69L18.19 18.53L18.94 17.23L16.5 15.82V13M16 9C14.04 9 12.27 9.82 11 11.12V7H17L19 5L17 3H11V2L10 1L9 2V6H3L1 8L3 10H9V20C7.9 20 7 20.9 7 22H12.41C13.46 22.63 14.69 23 16 23C19.87 23 23 19.87 23 16S19.87 9 16 9M16 20.85C13.32 20.85 11.15 18.68 11.15 16S13.32 11.15 16 11.15 20.85 13.32 20.85 16 18.68 20.85 16 20.85Z"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "type": "LINK",
+                        "config": {
+                          "fieldLabel": "{{{record:name}}}",
+                          "to": "/approvals/{{record:id}}"
+                        },
+                        "behavior": [
+                          {
+                            "type": "BINARY",
+                            "config": {
+                              "condition": {
+                                "property": "record:isRelated",
+                                "operator": "eq",
+                                "inverse": true,
+                                "value": [
+                                  true
+                                ]
+                              },
+                              "config": {
+                                "componentAttrs": {
+                                  "style": "text-decoration: line-through;text-decoration-style: dotted;"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "behavior": [
+                  {
+                    "type": "HIDDEN",
+                    "config": {
+                      "condition": {
+                        "property": "local:approvals",
+                        "operator": "empty",
+                        "value": []
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "ref": "approvals-empty",
+                "type": "TEXT",
+                "config": {
+                  "fieldLabel": "-"
+                },
+                "behavior": [
+                  {
+                    "type": "SHOW",
+                    "config": {
+                      "condition": {
+                        "property": "local:approvals.items",
+                        "operator": "empty",
+                        "value": []
+                      }
+                    }
+                  }
+                ]
+              }
+            ],
+            "behavior": [
+              {
+                "type": "SHOW",
+                "config": {
+                  "condition": {
+                    "property": "local:formData.$loading",
+                    "operator": "eq",
+                    "inverse": true,
+                    "value": [
+                      true
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "key": "landscapes",
+            "type": "REMOTE",
+            "config": {
+              "api": {
+                "url": "rolecatalog/{{route:id}}/lukoil/landscapes",
+                "method": "GET"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "edit_icon"
+        },
+        {
+          "type": "GET",
+          "path": "actions"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 1,
+          "deleteCount": 0,
+          "value": [
+            {
+              "name": "modalSave:editModal.successInfoEdit",
+              "type": "API",
+              "id": "saveLandscapes",
+              "config": {
+                "method": "PUT",
+                "url": "rolecatalog/{{route:id}}/lukoil/landscapes",
+                "payload": "{{{payload:modalSave.editModal.successInfoEdit.landscapes|take:id}}}"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "items.0.items.0.items.1.items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "ref": "landscapes",
+            "type": "DISPLAY_FIELD",
+            "config": {
+              "fieldLabel": {
+                "type": "TEMPLATE",
+                "config": {
+                  "tpl": "Ландшафт"
+                }
+              },
+              "data": "local:landscapes.items",
+              "editMode": "false",
+              "hidden": true,
+              "componentAttrs": {
+                "style": "flex:1;",
+                "class": "col-md-5 col-xs-12"
+              }
+            },
+            "items": [
+              {
+                "type": "ITERATOR",
+                "config": {
+                  "componentAttrs": {
+                    "class": "flex-column"
+                  }
+                },
+                "modelBindings": {
+                  "data": "local:landscapes.items"
+                },
+                "items": [
+                  {
+                    "type": "LAYOUT_ROW",
+                    "config": {
+                      "componentAttrs": {
+                        "componentClass": "flex items-center gap-sm"
+                      }
+                    },
+                    "items": [
+                      {
+                        "type": "TEXT",
+                        "config": {
+                          "fieldLabel": "{{record:id}}"
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "behavior": [
+                  {
+                    "type": "HIDDEN",
+                    "config": {
+                      "condition": {
+                        "property": "local:landscapes.items",
+                        "operator": "empty",
+                        "value": []
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "ref": "landscapes-empty",
+                "type": "TEXT",
+                "config": {
+                  "fieldLabel": "-"
+                },
+                "behavior": [
+                  {
+                    "type": "SHOW",
+                    "config": {
+                      "condition": {
+                        "property": "local:landscapes.items",
+                        "operator": "empty",
+                        "value": []
+                      }
+                    }
+                  }
+                ]
+              }
+            ],
+            "behavior": [
+              {
+                "type": "SHOW",
+                "config": {
+                  "condition": {
+                    "and": [
+                      {
+                        "property": "local:formData.$loading",
+                        "operator": "eq",
+                        "inverse": true,
+                        "value": [
+                          true
+                        ]
+                      },
+                      {
+                        "property": "local:formData.data.source",
+                        "operator": "eq",
+                        "value": ["ESBAsyncSAP"]
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

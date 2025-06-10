@@ -1,0 +1,155 @@
+{
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "key": "conflictRoles",
+            "type": "REMOTE",
+            "config": {
+              "api": {
+                "url": "v3/requests/{{route:requests}}/items/{{local:requestUsers.items.0.id}}/conflicts",
+                "method": "GET"
+              },
+              "readyToStart": false,
+              "behavior": [
+                {
+                  "type": "BINARY",
+                  "config": {
+                    "condition": {
+                      "and": [
+                        {
+                          "property": "local:requestHeader.type",
+                          "operator": "in",
+                          "value": ["CREATE_ROLE_ASSIGNMENTS", "CHANGE_ASSIGNMENTS_VALIDITY_PERIODS"]
+                        },
+                        {
+                          "property": "local:requestHeader.status",
+                          "operator": "in",
+                          "value": ["PENDING", "BEING_APPROVED"]
+                        },
+                        {
+                          "property": "local:requestHeader.metaData.hasGrcRoles",
+                          "operator": "eq",
+                          "value": [true]
+                        }
+                      ]
+                    },
+                    "config": {
+                      "readyToStart": true
+                    },
+                    "defaultConfig": {
+                      "readyToStart": false
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value":  {
+            "key": "actionsData",
+            "type": "LOCAL",
+            "config": {
+              "data": {
+                "items": []
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "requestHeader"
+        },
+        {
+          "type": "GET",
+          "path": "config.api.url"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "v3/requests/{{route:requests}}}"
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "request"
+        },
+        {
+          "type": "GET",
+          "path": "config.behavior.0.config.case.0.condition.and.0.value"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_REMOVE",
+          "removeType": "array",
+          "value": ["UPDATE_USER", "UPDATE_EMPLOYMENT"]
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "requestHeader"
+        },
+        {
+          "type": "GET",
+          "path": "config.api.url"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "v3/requests/{{route:requests}}}"
+        }
+      ]
+    }
+  ]
+}

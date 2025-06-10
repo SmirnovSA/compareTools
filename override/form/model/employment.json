@@ -1,0 +1,25 @@
+{
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "fields"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "itemPath": "extension/emailAddress",
+            "name": "emailAddress",
+            "format": "string",
+            "multiple": false,
+            "readonly": false,
+            "value": "raw:formDataEmployment.data.emailAddress"
+          }
+        }
+      ]
+    }
+  ]
+}

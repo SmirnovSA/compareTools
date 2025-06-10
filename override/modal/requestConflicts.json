@@ -1,0 +1,314 @@
+{
+  "type": "MODAL",
+  "model": [
+    {
+      "key": "modelConfig",
+      "type": "LOCAL",
+      "config": {
+        "data": {
+          "conflicts": []
+        }
+      }
+    }
+  ],
+  "navigation": [],
+  "config": {
+    "title": "Выявленные конфликты",
+    "position": "standard",
+    "width": "50vw",
+    "maxWidth": "80vw"
+  },
+  "items": [
+    {
+      "type": "MODAL_HEADER",
+      "config": {
+        "fieldLabel": "config:title"
+      }
+    },
+    {
+      "type": "MODAL_INNER",
+      "items": [
+        {
+          "type": "LAYOUT_ROW",
+          "items": [
+            {
+              "type": "TEXT_INLINE",
+              "config": {
+                "fieldLabel": "По запрашиваемым полномочиям выявлены следующие конфликты."
+              }
+            }
+          ]
+        },
+        {
+          "type": "LAYOUT_ROW",
+          "items": [
+            {
+              "type": "LIST_INLINE",
+              "config": {
+                "slot": "before",
+                "widget": {
+                  "type": "LIST_ROW",
+                  "items": [
+                    {
+                      "type": "LAYOUT_FLEX_COLUMN",
+                      "items": [
+                        {
+                          "type": "LAYOUT_ROW",
+                          "config": {
+                            "class": "q-mt-md"
+                          },
+                          "items": [
+                            {
+                              "type": "TEXT",
+                              "componentAttrs": {
+                                "class": "text-bold"
+                              },
+                              "config": {
+                                "fieldLabel": "Риск:"
+                              }
+                            },
+                            {
+                              "type": "TEXT",
+                              "config": {
+                                "fieldLabel": "{{record:RISKID}}"
+                              }
+                            },
+                            {
+                              "type": "TEXT",
+                              "config": {
+                                "fieldLabel": "{{record:RISK_DESCN}}",
+                                "tooltip": "{{record:RISK_DESCN}}"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "LAYOUT_ROW",
+                          "items": [
+                            {
+                              "type": "TEXT",
+                              "componentAttrs": {
+                                "class": "text-bold"
+                              },
+                              "config": {
+                                "fieldLabel": "Уровень риска:"
+                              }
+                            },
+                            {
+                              "type": "TEXT",
+                              "config": {
+                                "fieldLabel": {
+                                  "type": "TEMPLATE",
+                                  "config": {
+                                    "tpl": "{{{record:RISK_LEVEL}}}",
+                                    "context": "risk_level"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "LAYOUT_ROW",
+                          "items": [
+                            {
+                              "type": "LIST_INLINE",
+                              "ref": "conflict_list",
+                              "config": {
+                                "slot": "before",
+                                "scrollable": false,
+                                "componentAttrs": {
+                                  "style": "margin-left: -16px",
+                                  "componentClass": "q-pb-sm"
+                                },
+                                "widget": {
+                                  "ref": "conflict_widget",
+                                  "type": "LIST_ROW",
+                                  "slot": "default",
+                                  "config": {},
+                                  "items": [
+                                    {
+                                      "ref": "system_name_cell",
+                                      "type": "CELL_EMPTY",
+                                      "config": {
+                                        "componentAttrs": {
+                                          "minWidth": 240,
+                                          "grow": 1
+                                        }
+                                      },
+                                      "items": [
+                                        {
+                                          "type": "TEXT",
+                                          "config": {
+                                            "fieldLabel": "{{record:CONNECTOR}}",
+                                            "class": "q-pb-sm"
+                                          }
+                                        },
+                                        {
+                                          "type": "TEXT",
+                                          "config": {
+                                            "fieldLabel": "{{record:CONNECTOR_DESCN}}",
+                                            "tooltip": "{{record:CONNECTOR_DESCN}}"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "ref": "role_name_cell",
+                                      "type": "CELL_EMPTY",
+                                      "config": {
+                                        "componentAttrs": {
+                                          "minWidth": 240,
+                                          "grow": 1
+                                        }
+                                      },
+                                      "items": [
+                                        {
+                                          "type": "TEXT",
+                                          "config": {
+                                            "fieldLabel": "{{record:ROLE_DESCN}}",
+                                            "tooltip": "{{record:ROLE_DESCN}}",
+                                            "class": "q-pb-sm"
+                                          },
+                                          "behavior": [
+                                            {
+                                              "type": "HIDDEN",
+                                              "config": {
+                                                "condition": {
+                                                  "and": [
+                                                    {
+                                                      "property": "record:ROLE_DESCN",
+                                                      "operator": "empty",
+                                                      "value": [""]
+                                                    }
+                                                  ]
+                                                }
+                                              }
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "type": "TEXT",
+                                          "config": {
+                                            "fieldLabel": "{{record:ROLE_NAME}}"
+                                          },
+                                          "behavior": [
+                                            {
+                                              "type": "HIDDEN",
+                                              "config": {
+                                                "condition": {
+                                                  "and": [
+                                                    {
+                                                      "property": "record:ROLE_NAME",
+                                                      "operator": "empty",
+                                                      "value": [""]
+                                                    }
+                                                  ]
+                                                }
+                                              }
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "type": "TEXT",
+                                          "config": {
+                                            "fieldLabel": "-"
+                                          },
+                                          "behavior": [
+                                            {
+                                              "type": "SHOW",
+                                              "config": {
+                                                "condition": {
+                                                  "and": [
+                                                    {
+                                                      "property": "record:ROLE_NAME",
+                                                      "operator": "empty",
+                                                      "value": [""]
+                                                    },
+                                                    {
+                                                      "property": "record:ROLE_DESCN",
+                                                      "operator": "empty",
+                                                      "value": [""]
+                                                    }
+                                                  ]
+                                                }
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              },
+                              "modelBindings": {
+                                "data": "record:ET_SODANRL"
+                              },
+                              "items": [
+                                {
+                                  "type": "LIST_TH",
+                                  "ref": "systemName",
+                                  "config": {
+                                    "fieldLabel": {
+                                      "type": "TEMPLATE",
+                                      "config": { "tpl": "Система" }
+                                    },
+                                    "grow": 1,
+                                    "minWidth": 240
+                                  }
+                                },
+                                {
+                                  "type": "LIST_TH",
+                                  "ref": "roleName",
+                                  "config": {
+                                    "fieldLabel": {
+                                      "type": "TEMPLATE",
+                                      "config": { "tpl": "Роль" }
+                                    },
+                                    "grow": 1,
+                                    "minWidth": 240
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "modelBindings": {
+                "data": "local:modelConfig.conflicts"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "MODAL_ACTIONS",
+      "ref": "actions",
+      "items": [
+        {
+          "type": "TOOLBAR_SPACER"
+        },
+        {
+          "ref": "close-button",
+          "type": "BUTTON",
+          "config": {
+            "role": "primary",
+            "fieldLabel": "Закрыть"
+          },
+          "actions": [
+            {
+              "name": "click",
+              "type": "MODAL_SAVE",
+              "config": {}
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

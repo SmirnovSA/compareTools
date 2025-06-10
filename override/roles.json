@@ -1,0 +1,167 @@
+{
+  "__revisionModded": "f5bb35ab",
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "roles"
+        },
+        {
+          "type": "GET",
+          "path": "config.api.url"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "v3/roles"
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "requestParams"
+        },
+        {
+          "type": "GET",
+          "path": "config.data.advancedFilter"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": {
+            "hasRoleType": null,
+            "hasOwners": null,
+            "isRequestable": {
+              "id": true,
+              "name": "Можно запрашивать"
+            },
+            "owners": []
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "role_cell"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 2,
+          "deleteCount": 0,
+          "value": [
+            {
+              "ref": "role-connector-description",
+              "type": "TEXT",
+              "config": {
+                "fieldLabel": "{{record:connectorDescription}}",
+                "tooltip": "{{record:connectorDescription}}",
+                "componentAttrs": {
+                  "lines": 6,
+                  "class": "text-wrap q-mt-sm"
+                }
+              },
+              "behavior": [
+                {
+                  "type": "HIDDEN",
+                  "config": {
+                    "condition": {
+                      "property": "record:connectorDescription",
+                      "operator": "eq",
+                      "value": [""]
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "ref": "role-firs-description",
+              "type": "ITERATOR",
+              "config": {
+                "componentAttrs": {
+                  "class": "flex-column"
+                }
+              },
+              "modelBindings": {
+                "data": "record:firs"
+              },
+              "items": [
+                {
+                  "type": "TEXT",
+                  "config": {
+                    "fieldLabel": "{{record:$item}}",
+                    "tooltip": "{{record:$item}}",
+                    "componentAttrs": {
+                      "lines": 6,
+                      "class": "text-wrap q-mt-sm",
+                      "style": "white-space: nowrap;"
+                    }
+                  }
+                }
+              ],
+              "behavior": [
+                {
+                  "type": "HIDDEN",
+                  "config": {
+                    "condition": {
+                      "property": "record:firs",
+                      "operator": "empty",
+                      "value": []
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "ref": "role-firs-description-empty",
+              "type": "TEXT",
+              "config": {
+                "fieldLabel": "Роль не включена в информационный ресурс",
+                "componentAttrs": {
+                  "class": "text-wrap q-mt-sm",
+                  "style": "white-space: nowrap;"
+                }
+              },
+              "behavior": [
+                {
+                  "type": "SHOW",
+                  "config": {
+                    "condition": {
+                      "property": "record:firs",
+                      "operator": "empty",
+                      "value": []
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

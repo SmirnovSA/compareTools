@@ -1,0 +1,100 @@
+{
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "displayName-edit"
+        },
+        {
+          "type": "GET",
+          "path": "config.value"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "record:description"
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "description-edit"
+        },
+        {
+          "type": "GET",
+          "path": "config.value"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "record:displayName"
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "displayName-edit"
+        },
+        {
+          "type": "GET",
+          "path": "config.rules"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": []
+        }
+      ]
+    },
+
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "formFields.read"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 0,
+          "deleteCount": 2,
+          "value": [
+            {
+              "ref": "description",
+              "type": "DISPLAY_FIELD",
+              "config": {
+                "fieldLabel": "Полное название",
+                "text": "record:description",
+                "editMode": "false",
+                "componentAttrs": {
+                  "style": "overflow-wrap: anywhere;"
+                }
+              }
+            },
+            {
+              "ref": "displayName",
+              "type": "DISPLAY_FIELD",
+              "config": {
+                "fieldLabel": "Краткое название",
+                "text": "record:displayName",
+                "editMode": "false",
+                "componentAttrs": {
+                  "style": "overflow-wrap: anywhere;"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

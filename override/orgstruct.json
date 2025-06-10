@@ -1,0 +1,272 @@
+{
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "property": "key",
+          "operator": "eq",
+          "value": "orgstruct"
+        },
+        {
+          "type": "GET",
+          "path": "config.widget.items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 3,
+          "deleteCount": 1,
+          "value": {
+            "ref": "name-cell",
+            "type": "CELL_LINK",
+            "config": {
+              "class": "no-padding word-break q-my-md",
+              "componentAttrs": {
+                "grow": 1,
+                "lines": 3,
+                "descriptionLines": 1
+              },
+              "fieldLabel": "{{record:name}}",
+              "tooltip": "{{record:name}}"
+            },
+            "items": [
+
+              {
+                "type": "TEXT",
+                "ref": "description",
+                "config": {
+                  "class": "opacity-7 width-fit-content",
+                  "fieldLabel": "{{record:description}}",
+                  "tooltip": "{{record:description}}"
+                },
+                "behavior": [
+                  {
+                    "type": "HIDDEN",
+                    "config": {
+                      "condition": {
+                        "property": "record:description",
+                        "operator": "empty",
+                        "value": []
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "LAYOUT_ROW",
+                "items": [
+                  {
+                    "type": "CHIP",
+                    "ref": "manualCreate",
+                    "config": {
+                      "class": "no-margin opacity-7 q-mr-sm",
+                      "fieldLabel": {
+                        "type": "TEMPLATE",
+                        "config": {
+                          "tpl": "РУЧН"
+                        }
+                      },
+                      "mode": "outline",
+                      "dense": false,
+                      "ripple": false,
+                      "readonly": true,
+                      "size": "12px"
+                    },
+                    "behavior": [
+                      {
+                        "type": "SHOW",
+                        "config": {
+                          "condition": {
+                            "property": "record:isManual",
+                            "operator": "eq",
+                            "value": [true]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "ref": "gen-layout_flex_column-4-layout_row-2-list-list_row-3-cell_link-0-layout_row"
+              },
+              {
+                "type": "TEXT",
+                "ref": "parents",
+                "config": {
+                  "class": "opacity-7 width-fit-content q-mt-sm",
+                  "fieldLabel": "{{record:rootToTopNode|take:name|hierarchy}}",
+                  "tooltip": "{{record:rootToTopNode|take:name|separate}}"
+                },
+                "behavior": [
+                  {
+                    "type": "HIDDEN",
+                    "config": {
+                      "condition": {
+                        "property": "local:requestParams.search",
+                        "operator": "eq",
+                        "value": [""]
+                      }
+                    }
+                  },
+                  {
+                    "type": "BINARY",
+                    "config": {
+                      "condition": {
+                        "property": "record:type",
+                        "operator": "eq",
+                        "value": ["org"]
+                      },
+                      "config": {
+                        "fieldLabel": "{{record:rootToTopNode|take:name|array_remove:last|hierarchy}}",
+                        "tooltip": "{{record:rootToTopNode|take:name|array_remove:last|separate}}"
+                      }
+                    }
+                  }
+                ]
+              }
+            ],
+            "behavior": [
+              {
+                "type": "BINARY",
+                "config": {
+                  "condition": {
+                    "property": "record:type",
+                    "operator": "eq",
+                    "value": ["org"]
+                  },
+                  "config": {
+                    "to": "/orgstruct/card/{{record:id}}"
+                  },
+                  "defaultConfig": {
+                    "to": null
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "orgstruct"
+        },
+        {
+          "type": "GET",
+          "path": "config.widget.items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 4,
+          "value": {
+            "ref": "manager-cell",
+            "type": "CELL_LINK",
+            "config": {
+              "class": "break-word",
+              "hideIfEmpty": false,
+              "componentAttrs": {
+                "grow": 1
+              }
+            },
+            "behavior": [
+              {
+                "type": "BINARY",
+                "config": {
+                  "condition": {
+                    "property": "record:manager",
+                    "operator": "empty",
+                    "inverse": true
+                  },
+                  "config": {
+                    "fieldLabel": "{{record:manager.name}}",
+                    "to": "/users/{{record:manager.id}}/info"
+                  },
+                  "defaultConfig": {
+                    "fieldLabel": "-",
+                    "to": ""
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "orgstruct"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": [
+            {
+              "type": "LIST_TH",
+              "config": {
+                "fieldLabel": "",
+                "componentAttrs": {
+                  "grow": false,
+                  "minWidth": 50
+                }
+              }
+            },
+            {
+              "type": "LIST_TH",
+              "config": {
+                "fieldLabel": {
+                  "type": "TEMPLATE",
+                  "config": {
+                    "tpl": "Название"
+                  }
+                },
+                "sortable": true,
+                "sortProperty": "name",
+                "componentAttrs": {
+                  "grow": 1,
+                  "headerClass": "col"
+                }
+              }
+            },
+            {
+              "type": "LIST_TH",
+              "config": {
+                "fieldLabel": {
+                  "type": "TEMPLATE",
+                  "config": {
+                    "tpl": "Руководитель"
+                  }
+                },
+                "componentAttrs": {
+                  "grow": 1,
+                  "headerClass": "col"
+                }
+              }
+            },
+            {
+              "type": "LIST_TH",
+              "config": {
+                "fieldLabel": "",
+                "componentAttrs": {
+                  "grow": false,
+                  "minWidth": 100
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

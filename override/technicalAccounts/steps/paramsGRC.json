@@ -1,0 +1,270 @@
+{
+  "type": "LAYOUT_FLEX_COLUMN",
+  "ref": "paramsgrc-step",
+  "model": [
+    {
+      "key": "formData",
+      "type": "LOCAL",
+      "config": {
+        "data": {
+          "data": {
+            "resource": null,
+            "password": null,
+            "enabled": true,
+            "intent": null,
+            "intentGRC": null,
+            "params": []
+          }
+        }
+      }
+    },
+    {
+      "key": "formConfig",
+      "type": "REMOTE",
+      "config": {
+        "useMods": true,
+        "api": {
+          "url": "config/form/robot",
+          "method": "GET"
+        }
+      }
+    },
+    {
+      "key": "formState",
+      "type": "LOCAL",
+      "config": {
+        "data": {
+          "isValid": {}
+        }
+      }
+    },
+    {
+      "key": "attributes",
+      "type": "REMOTE",
+      "config": {
+        "readyToStart": false,
+        "api": {
+          "url": "/robots/robot/get-resource-attributes/{{local:formData.data.resource.0.id}}/intent/__undefined__",
+          "method": "GET"
+        },
+        "behavior": [
+          {
+            "type": "BINARY",
+            "config": {
+              "condition": {
+                "AND": [
+                  {
+                    "property": "local:formData.data.resource.0.id",
+                    "operator": "empty",
+                    "inverse": true,
+                    "value": null
+                  }
+                ]
+              },
+              "config": {
+                "readyToStart": true
+              },
+              "defaultConfig": {
+                "readyToStart": false
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "items": [
+    {
+      "type": "WATCH_EFFECT",
+      "config": {
+        "watchParams": ["local:formData.data.intentGRC"]
+      },
+      "actions": [
+        {
+          "name": "dataChange",
+          "id": "intentGRCChange",
+          "type": "BUBBLE",
+          "config": {
+            "eventPayload": {
+              "intentGRC": "local:formData.data.intentGRC"
+            }
+          }
+        }
+      ],
+      "ref": "watch_effect-intentGRC123"
+    },
+    {
+      "type": "WATCH_EFFECT",
+      "config": {
+        "watchParams": ["local:formData.data.password"]
+      },
+      "actions": [
+        {
+          "name": "dataChange",
+          "id": "passwordChange",
+          "type": "BUBBLE",
+          "config": {
+            "eventPayload": {
+              "password": "local:formData.data.password"
+            }
+          }
+        }
+      ],
+      "ref": "gen-layout_flex_column-0-watch_effect"
+    },
+    {
+      "type": "WATCH_EFFECT",
+      "config": {
+        "watchParams": ["local:formData.data.enabled"]
+      },
+      "actions": [
+        {
+          "name": "dataChange",
+          "id": "enabledChange",
+          "type": "BUBBLE",
+          "config": {
+            "eventPayload": {
+              "enabled": "local:formData.data.enabled"
+            }
+          }
+        }
+      ],
+      "ref": "gen-layout_flex_column-1-watch_effect"
+    },
+    {
+      "type": "WATCH_EFFECT",
+      "config": {
+        "watchParams": ["local:attributes.items"]
+      },
+      "actions": [
+        {
+          "name": "dataChange",
+          "id": "attributeChange",
+          "type": "BUBBLE",
+          "config": {
+            "eventPayload": {
+              "attributes": {
+                "type": "CONVERT",
+                "config": {
+                  "source": "local:attributes",
+                  "mods": [
+                    {
+                      "findTarget": [
+                        {
+                          "type": "GET",
+                          "path": "items"
+                        }
+                      ],
+                      "modify": [
+                        {
+                          "type": "ARRAY_REMOVE",
+                          "removeType": "objectsByPropValues",
+                          "value": {
+                            "value": null
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ],
+      "ref": "gen-layout_flex_column-2-watch_effect"
+    },
+    {
+      "type": "WATCH_EFFECT",
+      "config": {
+        "watchParams": ["local:formData.data.resource"]
+      },
+      "actions": [
+        {
+          "name": "dataChange",
+          "id": "resourceChange",
+          "type": "BUBBLE",
+          "config": {
+            "eventPayload": {
+              "resource": "local:formData.data.resource"
+            }
+          }
+        }
+      ],
+      "ref": "gen-layout_flex_column-3-watch_effect"
+    },
+    {
+      "type": "WATCH_EFFECT",
+      "config": {
+        "watchParams": ["local:formData.data.intent"]
+      },
+      "actions": [
+        {
+          "name": "dataChange",
+          "id": "intentChange",
+          "type": "BUBBLE",
+          "config": {
+            "eventPayload": {
+              "intent": "local:formData.data.intent"
+            }
+          }
+        }
+      ],
+      "ref": "gen-layout_flex_column-4-watch_effect"
+    },
+    {
+      "type": "SCROLL_AREA",
+      "items": [
+        {
+          "ref": "dynamic_form",
+          "type": "DYNAMIC_FORM_WRAPPER",
+          "modelBindings": {
+            "model": "local:formConfig.items",
+            "isValid": "local:formState.isValid",
+            "data": "local:formData.data"
+          },
+          "config": {
+            "formType": "create-step-params"
+          },
+          "actions": [
+            {
+              "name": "bubbleEvent:attributeChange",
+              "type": "BUBBLE",
+              "id": "attributeChange",
+              "config": {
+                "eventPayload": {
+                  "key": "payload:key",
+                  "value": "payload:value",
+                  "multivalued": "payload:multivalued"
+                }
+              }
+            },
+            {
+              "name": "validation-change",
+              "id": "validationChange",
+              "type": "BUBBLE",
+              "config": {
+                "eventPayload": {
+                  "isValid": {
+                    "type": "CONDITION_VALUE",
+                    "config": {
+                      "condition": {
+                        "property": "eventPayload:validation",
+                        "operator": "eq",
+                        "inverse": true,
+                        "value": ["initial"]
+                      },
+                      "value": "{{eventPayload:validation|object_values|every|boolean}}",
+                      "defaultValue": null
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "ref": "gen-layout_flex_column-5-scroll_area"
+    }
+  ]
+}

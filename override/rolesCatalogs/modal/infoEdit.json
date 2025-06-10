@@ -1,0 +1,691 @@
+{
+  "mods": [
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "key": "approvals",
+            "type": "REMOTE",
+            "config": {
+              "readyToStart": false,
+              "api": {
+                "url": "rolecatalog/{{local:modelConfig.cardId}}/lukoil/approvals",
+                "method": "GET"
+              },
+              "behavior": [
+                {
+                  "type": "BINARY",
+                  "config": {
+                    "condition": {
+                      "property": "local:modelConfig.createMode",
+                      "operator": "eq",
+                      "inverse": true,
+                      "value": [
+                        true
+                      ]
+                    },
+                    "config": {
+                      "readyToStart": true
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        },
+        {
+          "type": "FIND",
+          "property": "key",
+          "operator": "eq",
+          "value": "modelConfig"
+        },
+        {
+          "type": "GET",
+          "ignoreUndefined": true,
+          "path": "config.data.cardId"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "route:id"
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "items"
+        },
+        {
+          "type": "FIND",
+          "property": "type",
+          "operator": "eq",
+          "value": "MODAL_INNER"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 0,
+          "deleteCount": 1,
+          "value": {
+            "type": "LAYOUT_FLEX_COLUMN",
+            "ref": "scroll-area",
+            "config": {
+              "class": "q-mb-sm"
+            },
+            "items": [
+              {
+                "ref": "dynamic_form",
+                "type": "DYNAMIC_FORM_WRAPPER",
+                "modelBindings": {
+                  "model": "local:formConfig.items"
+                },
+                "config": {
+                  "formType": "createOrUpdate"
+                }
+              },
+              {
+                "ref": "approvals-edit",
+                "type": "OBJECT_SELECTOR",
+                "config": {
+                  "fieldLabel": {
+                    "type": "TEMPLATE",
+                    "config": {
+                      "tpl": "Маршрут согласования"
+                    }
+                  },
+                  "value": "local:approvals.items",
+                  "hidden": true,
+                  "class": "q-mt-md q-pt-sm",
+                  "componentAttrs": {
+                    "multiple": true,
+                    "clearable": true,
+                    "bottom-slots": false,
+                    "hideBottomSpace": true
+                  },
+                  "widget": {
+                    "type": "CHIP",
+                    "ref": "approvals-chip",
+                    "config": {
+                      "fieldLabel": "{{record:name}}",
+                      "componentAttrs": {
+                        "color": "",
+                        "textColor": "",
+                        "removable": true,
+                        "outline": true
+                      }
+                    }
+                  }
+                },
+                "actions": [
+                  {
+                    "name": "addItem",
+                    "type": "MODAL",
+                    "id": "approvalsModal",
+                    "config": {
+                      "url": "config/rolesCatalogs/modal/selectApprovals",
+                      "modelConfig": {
+                        "selectedItems.items": "raw:approvals.items"
+                      },
+                      "initialConfig": {
+                        "catalogId": "{{local:modelConfig.cardId}}"
+                      }
+                    }
+                  },
+                  {
+                    "type": "MODIFY",
+                    "name": "modalSave:approvalsModal",
+                    "config": {
+                      "commitData": false,
+                      "source": "local:approvals",
+                      "mods": [
+                        {
+                          "findTarget": [
+                            {
+                              "type": "GET",
+                              "path": "items"
+                            }
+                          ],
+                          "modify": [
+                            {
+                              "type": "SET",
+                              "value": "payload:modalSave.approvalsModal.selectedItems.items"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "behavior": [
+                  {
+                    "type": "SHOW",
+                    "config": {
+                      "condition": {
+                        "and": [
+                          {
+                            "property": "local:modelConfig.createMode",
+                            "operator": "eq",
+                            "inverse": true,
+                            "value": [
+                              true
+                            ]
+                          },
+                          {
+                            "property": "local:formData.$loading",
+                            "operator": "eq",
+                            "inverse": true,
+                            "value": [
+                              true
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "submit"
+        },
+        {
+          "type": "GET",
+          "path": "actions"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": [
+            {
+              "name": "click",
+              "type": "MODIFY",
+              "config": {
+                "commitData": true,
+                "source": "local:modelConfig",
+                "mods": [
+                  {
+                    "findTarget": [
+                      {
+                        "type": "GET",
+                        "path": "loading"
+                      }
+                    ],
+                    "modify": [
+                      {
+                        "type": "SET",
+                        "value": true
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "click",
+              "type": "MODAL_SAVE",
+              "id": "successInfoEdit",
+              "config": {
+                "payload": {
+                  "formData": "raw:formData.data",
+                  "fields": "raw:formDataRequest.fields",
+                  "formState": "raw:formState"
+                }
+              },
+              "condition": {
+                "property": "local:modelConfig.createMode",
+                "operator": "eq",
+                "value": [
+                  true
+                ]
+              }
+            },
+            {
+              "name": "click",
+              "type": "MODAL_SAVE",
+              "id": "successInfoEdit",
+              "config": {
+                "payload": {
+                  "formData": "raw:formData.data",
+                  "fields": "raw:formDataRequest.fields",
+                  "formState": "raw:formState",
+                  "approvals": "raw:approvals.items"
+                }
+              },
+              "condition": {
+                "property": "local:modelConfig.createMode",
+                "operator": "eq",
+                "inverse": true,
+                "value": [
+                  true
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "submit"
+        },
+        {
+          "type": "GET",
+          "path": "behavior"
+        },
+        {
+          "type": "FIND",
+          "property": "type",
+          "operator": "eq",
+          "value": "DISABLED"
+        },
+        {
+          "type": "GET",
+          "path": "config.condition"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": {
+            "or": [
+              {
+                "and": [
+                  {
+                    "property": "local:formData.$hasChanges",
+                    "operator": "eq",
+                    "inverse": "true",
+                    "value": [
+                      true
+                    ]
+                  },
+                  {
+                    "property": "local:approvals.$hasChanges",
+                    "operator": "eq",
+                    "inverse": "true",
+                    "value": [
+                      true
+                    ]
+                  }
+                ]
+              },
+              {
+                "property": "raw:formState.isValid",
+                "operator": "eq",
+                "value": [
+                  false
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "config.title"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": "Редактирование информационного ресурса"
+        }
+      ]
+    },
+
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "key": "landscapesOptions",
+            "type": "REMOTE",
+            "config": {
+              "readyToStart": true,
+              "api": {
+                "url": "rolecatalog/lukoil/landscapes",
+                "method": "GET"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "GET",
+          "path": "model"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_PUSH",
+          "value": {
+            "key": "landscapes",
+            "type": "REMOTE",
+            "config": {
+              "readyToStart": false,
+              "api": {
+                "url": "rolecatalog/{{local:modelConfig.cardId}}/lukoil/landscapes",
+                "method": "GET"
+              },
+              "behavior": [
+                {
+                  "type": "BINARY",
+                  "config": {
+                    "condition": {
+                      "property": "local:modelConfig.createMode",
+                      "operator": "eq",
+                      "inverse": true,
+                      "value": [
+                        true
+                      ]
+                    },
+                    "config": {
+                      "readyToStart": true
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "scroll-area"
+        },
+        {
+          "type": "GET",
+          "path": "items"
+        }
+      ],
+      "modify": [
+        {
+          "type": "ARRAY_SPLICE",
+          "start": 2,
+          "deleteCount": 1,
+          "value": {
+            "ref": "landscape",
+            "type": "SELECT",
+            "config": {
+              "class": "q-mt-md q-pt-sm",
+              "value": "local:landscapes.items",
+              "hideBottomSpace": true,
+              "componentAttrs": {
+                "clearable": true,
+                "option-value": "id",
+                "option-label": "id",
+                "use-chips": true,
+                "multiple": true
+              },
+              "options": "local:landscapesOptions.items",
+              "fieldLabel": {
+                "type": "TEMPLATE",
+                "config": {
+                  "tpl": "Ландшафт"
+                }
+              },
+              "behavior": [
+                {
+                  "type": "SHOW",
+                  "config": {
+                    "condition": {
+                      "or": [
+                        {
+                          "and": [
+                            {
+                              "property": "local:modelConfig.createMode",
+                              "operator": "eq",
+                              "inverse": true,
+                              "value": [
+                                true
+                              ]
+                            },
+                            {
+                              "property": "local:formData.$loading",
+                              "operator": "eq",
+                              "inverse": true,
+                              "value": [
+                                true
+                              ]
+                            },
+                            {
+                              "property": "local:formData.data.source",
+                              "operator": "eq",
+                              "value": ["ESBAsyncSAP"]
+                            }
+                          ]
+                        },
+                        {
+                          "and": [
+                            {
+                              "property": "local:modelConfig.createMode",
+                              "operator": "eq",
+                              "value": [
+                                true
+                              ]
+                            },
+                            {
+                              "property": "local:formConfig.$loading",
+                              "operator": "eq",
+                              "inverse": true,
+                              "value": [
+                                true
+                              ]
+                            },
+                            {
+                              "property": "local:formData.data.source",
+                              "operator": "eq",
+                              "value": ["ESBAsyncSAP"]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "submit"
+        },
+        {
+          "type": "GET",
+          "path": "actions"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": [
+            {
+              "name": "click",
+              "type": "MODIFY",
+              "config": {
+                "commitData": true,
+                "source": "local:modelConfig",
+                "mods": [
+                  {
+                    "findTarget": [
+                      {
+                        "type": "GET",
+                        "path": "loading"
+                      }
+                    ],
+                    "modify": [
+                      {
+                        "type": "SET",
+                        "value": true
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "click",
+              "type": "MODAL_SAVE",
+              "id": "successInfoEdit",
+              "config": {
+                "payload": {
+                  "formData": "raw:formData.data",
+                  "fields": "raw:formDataRequest.fields",
+                  "formState": "raw:formState",
+                  "landscapes": "raw:landscapes.items"
+                }
+              },
+              "condition": {
+                "property": "local:modelConfig.createMode",
+                "operator": "eq",
+                "value": [
+                  true
+                ]
+              }
+            },
+            {
+              "name": "click",
+              "type": "MODAL_SAVE",
+              "id": "successInfoEdit",
+              "config": {
+                "payload": {
+                  "formData": "raw:formData.data",
+                  "fields": "raw:formDataRequest.fields",
+                  "formState": "raw:formState",
+                  "approvals": "raw:approvals.items",
+                  "landscapes": "raw:landscapes.items"
+                }
+              },
+              "condition": {
+                "property": "local:modelConfig.createMode",
+                "operator": "eq",
+                "inverse": true,
+                "value": [
+                  true
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "findTarget": [
+        {
+          "type": "FIND_BY_REF",
+          "value": "submit"
+        },
+        {
+          "type": "GET",
+          "path": "behavior"
+        },
+        {
+          "type": "FIND",
+          "property": "type",
+          "operator": "eq",
+          "value": "DISABLED"
+        },
+        {
+          "type": "GET",
+          "path": "config.condition"
+        }
+      ],
+      "modify": [
+        {
+          "type": "SET",
+          "value": {
+            "or": [
+              {
+                "and": [
+                  {
+                    "property": "local:formData.$hasChanges",
+                    "operator": "eq",
+                    "inverse": "true",
+                    "value": [
+                      true
+                    ]
+                  },
+                  {
+                    "property": "local:approvals.$hasChanges",
+                    "operator": "eq",
+                    "inverse": "true",
+                    "value": [
+                      true
+                    ]
+                  },
+                  {
+                    "property": "local:landscapes.$hasChanges",
+                    "operator": "eq",
+                    "inverse": "true",
+                    "value": [
+                      true
+                    ]
+                  }
+                ]
+              },
+              {
+                "property": "raw:formState.isValid",
+                "operator": "eq",
+                "value": [
+                  false
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
